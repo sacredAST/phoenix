@@ -11,6 +11,12 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type ProjectPageHeader_stats$data = {
+  readonly userCount: number;
+  readonly countOfConversation: number;
+  readonly messageCount: number;
+  readonly avgMonthlyActiveUsers: number;
+  readonly avgDailyActiveUsers: number;
+  readonly avgMessagesPerConversation: number;
   readonly documentEvaluationNames: ReadonlyArray<string>;
   readonly id: string;
   readonly latencyMsP50: number | null;

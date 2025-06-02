@@ -863,6 +863,12 @@ class Project(Node):
     updatedAt: str
     validateSpanFilterCondition: ValidationResult
 
+    userCount: Optional[float] = None
+    countOfConversation: Optional[float] = None
+    messageCount: Optional[float] = None
+    avgMonthlyActiveUsers: Optional[float] = None
+    avgDailyActiveUsers: Optional[float] = None
+    avgMessagesPerConversation: Optional[float] = None
 
 class ProjectConnection(BaseModel):
     model_config = ConfigDict(frozen=True)

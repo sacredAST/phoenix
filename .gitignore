@@ -9,6 +9,9 @@ sdist
 **/.pytest_cache
 **/.ipynb_checkpoints/
 **/.DS_Store
+/venv
+.pdm-python
+pdm.lock
 
 # Server static files
 /src/phoenix/server/static/*

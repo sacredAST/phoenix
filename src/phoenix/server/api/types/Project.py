@@ -141,6 +141,72 @@ class Project(Node):
         return await info.context.data_loaders.record_counts.load(
             ("trace", self.project_rowid, time_range, None),
         )
+    
+    @strawberry.field
+    async def user_count(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> int:
+        return 1
+        return await info.context.data_loaders.record_counts.load(
+            ("trace", self.project_rowid, time_range, None),
+        )
+    
+    @strawberry.field
+    async def count_of_conversation(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> int:
+        return 2
+        return await info.context.data_loaders.record_counts.load(
+            ("trace", self.project_rowid, time_range, None),
+        )
+    
+    @strawberry.field
+    async def message_count(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> int:
+        return 3
+        return await info.context.data_loaders.record_counts.load(
+            ("trace", self.project_rowid, time_range, None),
+        )
+    
+    @strawberry.field
+    async def avg_monthly_active_users(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> int:
+        return 4
+        return await info.context.data_loaders.record_counts.load(
+            ("trace", self.project_rowid, time_range, None),
+        )
+    
+    @strawberry.field
+    async def avg_daily_active_users(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> int:
+        return 5
+        return await info.context.data_loaders.record_counts.load(
+            ("trace", self.project_rowid, time_range, None),
+        )
+    
+    @strawberry.field
+    async def avg_messages_per_conversation(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> int:
+        return 6
+        return await info.context.data_loaders.record_counts.load(
+            ("trace", self.project_rowid, time_range, None),
+        )
 
     @strawberry.field
     async def token_count_total(
