@@ -148,7 +148,7 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
-        return 1
+        return 171
         return await info.context.data_loaders.record_counts.load(
             ("trace", self.project_rowid, time_range, None),
         )
@@ -159,7 +159,7 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
-        return 2
+        return 199
         return await info.context.data_loaders.record_counts.load(
             ("trace", self.project_rowid, time_range, None),
         )
@@ -170,7 +170,7 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
-        return 3
+        return 720
         return await info.context.data_loaders.record_counts.load(
             ("trace", self.project_rowid, time_range, None),
         )
@@ -180,8 +180,8 @@ class Project(Node):
         self,
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
-    ) -> int:
-        return 4
+    ) -> float:
+        return 147.67
         return await info.context.data_loaders.record_counts.load(
             ("trace", self.project_rowid, time_range, None),
         )
@@ -191,8 +191,8 @@ class Project(Node):
         self,
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
-    ) -> int:
-        return 5
+    ) -> float:
+        return 9.27
         return await info.context.data_loaders.record_counts.load(
             ("trace", self.project_rowid, time_range, None),
         )
@@ -202,8 +202,8 @@ class Project(Node):
         self,
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
-    ) -> int:
-        return 6
+    ) -> float:
+        return 3.62
         return await info.context.data_loaders.record_counts.load(
             ("trace", self.project_rowid, time_range, None),
         )
