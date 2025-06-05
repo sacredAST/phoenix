@@ -15,7 +15,7 @@ pdm.lock
 
 # Server static files
 /src/phoenix/server/static/*
-
+packages/phoenix-client/src/ex
 # Docgen
 /js/**/docs
 

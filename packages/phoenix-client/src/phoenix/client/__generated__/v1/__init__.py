@@ -687,3 +687,20 @@ class OtlpSpan(TypedDict):
 class SpanSearchResponseBody(TypedDict):
     data: Sequence[OtlpSpan]
     next_cursor: Optional[str]
+
+class UserInfo(TypedDict):
+    user_id: str
+    name: Optional[str] = ""
+    email: Optional[str] = ""
+    last_login: Optional[str] = ""
+
+class MessageInfo(TypedDict):
+    user_id: str
+    message_id: str
+    conversation_id: str
+    timestamp: Optional[str] = ""
+
+class ConversationInfo(TypedDict):
+    conversation_id: str
+    last_interaction: Optional[str] = ""
+    user_id: Optional[str] = ""

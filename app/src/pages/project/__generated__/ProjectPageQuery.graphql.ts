@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e25579579a1976250cfa5172ddf916db>>
+ * @generated SignedSource<<ee1714cc92e580d0f41864b434f506c8>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -177,6 +177,48 @@ return {
               },
               {
                 "alias": null,
+                "args": (v3/*: any*/),
+                "kind": "ScalarField",
+                "name": "userCount",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v3/*: any*/),
+                "kind": "ScalarField",
+                "name": "countOfConversation",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v3/*: any*/),
+                "kind": "ScalarField",
+                "name": "messageCount",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v3/*: any*/),
+                "kind": "ScalarField",
+                "name": "avgMonthlyActiveUsers",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v3/*: any*/),
+                "kind": "ScalarField",
+                "name": "avgDailyActiveUsers",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v3/*: any*/),
+                "kind": "ScalarField",
+                "name": "avgMessagesPerConversation",
+                "storageKey": null
+              },
+              {
+                "alias": null,
                 "args": null,
                 "kind": "ScalarField",
                 "name": "spanAnnotationNames",
@@ -206,12 +248,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "6f2e474e767cd6efbff3c16e5bda0e88",
+    "cacheID": "fb1974aa218fe5de634877ede2cbd82c",
     "id": null,
     "metadata": {},
     "name": "ProjectPageQuery",
     "operationKind": "query",
-    "text": "query ProjectPageQuery(\n  $id: ID!\n  $timeRange: TimeRange!\n) {\n  project: node(id: $id) {\n    __typename\n    ...ProjectPageHeader_stats\n    ...StreamToggle_data\n    id\n  }\n}\n\nfragment ProjectPageHeader_stats on Project {\n  traceCount(timeRange: $timeRange)\n  tokenCountTotal(timeRange: $timeRange)\n  tokenCountPrompt(timeRange: $timeRange)\n  tokenCountCompletion(timeRange: $timeRange)\n  latencyMsP50: latencyMsQuantile(probability: 0.5, timeRange: $timeRange)\n  latencyMsP99: latencyMsQuantile(probability: 0.99, timeRange: $timeRange)\n  spanAnnotationNames\n  documentEvaluationNames\n  id\n}\n\nfragment StreamToggle_data on Project {\n  streamingLastUpdatedAt\n  id\n}\n"
+    "text": "query ProjectPageQuery(\n  $id: ID!\n  $timeRange: TimeRange!\n) {\n  project: node(id: $id) {\n    __typename\n    ...ProjectPageHeader_stats\n    ...StreamToggle_data\n    id\n  }\n}\n\nfragment ProjectPageHeader_stats on Project {\n  traceCount(timeRange: $timeRange)\n  tokenCountTotal(timeRange: $timeRange)\n  tokenCountPrompt(timeRange: $timeRange)\n  tokenCountCompletion(timeRange: $timeRange)\n  latencyMsP50: latencyMsQuantile(probability: 0.5, timeRange: $timeRange)\n  latencyMsP99: latencyMsQuantile(probability: 0.99, timeRange: $timeRange)\n  userCount(timeRange: $timeRange)\n  countOfConversation(timeRange: $timeRange)\n  messageCount(timeRange: $timeRange)\n  avgMonthlyActiveUsers(timeRange: $timeRange)\n  avgDailyActiveUsers(timeRange: $timeRange)\n  avgMessagesPerConversation(timeRange: $timeRange)\n  spanAnnotationNames\n  documentEvaluationNames\n  id\n}\n\nfragment StreamToggle_data on Project {\n  streamingLastUpdatedAt\n  id\n}\n"
   }
 };
 })();

@@ -8,6 +8,7 @@ from phoenix.client.resources.annotations import Annotations, AsyncAnnotations
 from phoenix.client.resources.projects import AsyncProjects, Projects
 from phoenix.client.resources.prompts import AsyncPrompts, Prompts
 from phoenix.client.resources.spans import AsyncSpans, Spans
+from phoenix.client.resources.usages import Usages
 from phoenix.client.utils.config import get_base_url, get_env_client_headers
 
 
@@ -55,6 +56,7 @@ class Client:
         self._projects = Projects(value)
         self._spans = Spans(value)
         self._annotations = Annotations(value)
+        self._usages = Usages(value)
 
     @property
     def prompts(self) -> Prompts:
@@ -86,6 +88,17 @@ class Client:
             Spans: An instance of the Spans class.
         """
         return self._spans
+    
+    @property
+    def usages(self) -> Usages:
+        """
+        Returns an instance of the Usages class for interacting with span-related
+        API endpoints.
+
+        Returns:
+            Usages: An instance of the Usages class.
+        """
+        return self._usages
 
     @property
     def annotations(self) -> Annotations:

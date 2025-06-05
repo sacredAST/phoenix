@@ -1,8 +1,10 @@
 import gzip
 import zlib
+import json
+import pandas as pd
 from typing import Any, Literal, Optional
 
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Query
+from fastapi import APIRouter, Path, Header, HTTPException, Query
 from google.protobuf.json_format import MessageToJson
 from google.protobuf.message import DecodeError
 from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import (
@@ -35,64 +37,177 @@ from .utils import RequestBody, ResponseBody, add_errors_to_responses
 
 router = APIRouter(tags=["usages"])
 
-
 @router.post(
-    "/usages",
-    operation_id="addUsages",
-    summary="Send usages",
+    "/projects/{project_id}/usages_user_info",
+    operation_id="Insert user informations",
+    summary="insert user info",
     responses=add_errors_to_responses(
         [
-            {
-                "status_code": HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                "description": (
-                    "Unsupported content type (only `application/x-protobuf` is supported)"
-                ),
-            },
-            {"status_code": HTTP_422_UNPROCESSABLE_ENTITY, "description": "Invalid request body"},
+            HTTP_404_NOT_FOUND,
+            HTTP_422_UNPROCESSABLE_ENTITY,
         ]
     ),
-    openapi_extra={
-        "requestBody": {
-            "required": True,
-            "content": {
-                "application/x-protobuf": {"schema": {"type": "string", "format": "binary"}}
-            },
-        }
-    },
-    include_in_schema=False,
 )
-async def post_traces(
+async def insert_user_info(
     request: Request,
-    background_tasks: BackgroundTasks,
-    content_type: Optional[str] = Header(default=None),
-    content_encoding: Optional[str] = Header(default=None),
+    project_id: str = Path(
+        description=(
+            "The project identifier: either project ID or project name. If using a project name, "
+            "it cannot contain slash (/), question mark (?), or pound sign (#) characters."
+        )
+    ),
 ) -> JSONResponse:
-    if content_type != "application/x-protobuf":
-        raise HTTPException(
-            detail=f"Unsupported content type: {content_type}",
-            status_code=HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        )
-    if content_encoding and content_encoding not in ("gzip", "deflate"):
-        raise HTTPException(
-            detail=f"Unsupported content encoding: {content_encoding}",
-            status_code=HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        )
+    
     body = await request.body()
-    if content_encoding == "gzip":
-        body = await run_in_threadpool(gzip.decompress, body)
-    elif content_encoding == "deflate":
-        body = await run_in_threadpool(zlib.decompress, body)
-    req = ExportTraceServiceRequest()
-    try:
-        await run_in_threadpool(req.ParseFromString, body)
-    except DecodeError:
-        raise HTTPException(
-            detail="Request body is invalid ExportTraceServiceRequest",
-            status_code=HTTP_422_UNPROCESSABLE_ENTITY,
-        )
-    background_tasks.add_task(_add_spans, req, request.state)
-    return JSONResponse(MessageToJson(ExportTraceServiceResponse()))
+    body_data = body.decode('utf-8')
+    json_data = json.loads(body_data)
 
+    user_info_df = pd.read_json(json_data, orient="records")
+
+    async with request.app.state.db() as session:
+        for index, row in user_info_df.iterrows():
+            new_user_info = models.UserInfo(
+                project_id=project_id,
+                user_id = row['user_id'],
+                name = row['name'],
+                email = row['email'],
+                last_login = row['last_login']
+            )
+            session.add(new_user_info)
+
+    return JSONResponse("{}")
+
+@router.get(
+    "/projects/{project_id}/usages_user_info",
+    operation_id="Get user informations",
+    summary="get user info",
+    responses=add_errors_to_responses(
+        [
+            HTTP_404_NOT_FOUND,
+            HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
+    ),
+)
+async def get_user_info(
+    request: Request,
+    project_id: str = Path(
+        description=(
+            "The project identifier: either project ID or project name. If using a project name, "
+            "it cannot contain slash (/), question mark (?), or pound sign (#) characters."
+        )
+    ),
+    limit: int = Query(default=100, gt=0, le=1000, description="Maximum number of user informations!"),
+) -> JSONResponse:
+    async with request.app.state.db() as session:
+        stmt = (
+            select(models.UserInfo)
+            .where(
+                models.UserInfo.project_id == project_id,
+            )
+            .limit(limit)
+        )
+        result = await session.execute(stmt)
+    user_info_rows = result.scalars().all()
+
+    user_info_list = [
+        {
+            "user_id": user_info.user_id,
+            "name": user_info.name,
+            "email": user_info.email,
+            "last_login": user_info.last_login,
+            "project_id": user_info.project_id
+        }
+        for user_info in user_info_rows
+    ]
+
+    return JSONResponse(content=user_info_list)
+
+@router.post(
+    "/projects/{project_id}/usages_message_info",
+    operation_id="Insert message informations",
+    summary="insert message info",
+    responses=add_errors_to_responses(
+        [
+            HTTP_404_NOT_FOUND,
+            HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
+    ),
+)
+async def insert_message_info(
+    request: Request,
+    project_id: str = Path(
+        description=(
+            "The project identifier: either project ID or project name. If using a project name, "
+            "it cannot contain slash (/), question mark (?), or pound sign (#) characters."
+        )
+    ),
+) -> JSONResponse:
+    
+    body = await request.body()
+    body_data = body.decode('utf-8')
+    json_data = json.loads(body_data)
+
+    message_info_df = pd.read_json(json_data, orient="records")
+
+    print(message_info_df[['user_id', 'message_id', 'conversation_id', 'timestamp']])
+
+    async with request.app.state.db() as session:
+        for index, row in message_info_df.iterrows():
+            print(f"{row['user_id']} | {row['message_id']} | {row['conversation_id']} | {row['timestamp']}")
+            new_message_info = models.MessageInfo(
+                project_id=project_id,
+                user_id=row['user_id'],
+                message_id=row['message_id'],
+                conversation_id=row['conversation_id'],
+                timestamp=row['timestamp']
+            )
+            session.add(new_message_info)
+
+    return JSONResponse("{}")
+
+@router.get(
+    "/projects/{project_id}/usages_message_info",
+    operation_id="Get message informations",
+    summary="get message info",
+    responses=add_errors_to_responses(
+        [
+            HTTP_404_NOT_FOUND,
+            HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
+    ),
+)
+async def get_message_info(
+    request: Request,
+    project_id: str = Path(
+        description=(
+            "The project identifier: either project ID or project name. If using a project name, "
+            "it cannot contain slash (/), question mark (?), or pound sign (#) characters."
+        )
+    ),
+    limit: int = Query(default=100, gt=0, le=1000, description="Maximum number of user informations!"),
+) -> JSONResponse:
+    async with request.app.state.db() as session:
+        stmt = (
+            select(models.MessageInfo)
+            .where(
+                models.MessageInfo.project_id == project_id,
+            )
+            .limit(limit)
+        )
+        result = await session.execute(stmt)
+    message_info_rows = result.scalars().all()
+
+    message_info_list = [
+        {
+            "user_id": message_info.user_id,
+            "message_id": message_info.message_id,
+            "conversation_id": message_info.conversation_id,
+            "timestamp": message_info.timestamp,
+        }
+        for message_info in message_info_rows
+    ]
+
+    return JSONResponse(content=message_info_list)
 
 class TraceAnnotationResult(V1RoutesBaseModel):
     label: Optional[str] = Field(default=None, description="The label assigned by the annotation")

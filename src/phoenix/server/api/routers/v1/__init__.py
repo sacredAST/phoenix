@@ -16,6 +16,7 @@ from .prompts import router as prompts_router
 from .spans import router as spans_router
 from .traces import router as traces_router
 from .users import router as users_router
+from .usage import router as usage_router
 from .utils import add_errors_to_responses
 
 REST_API_VERSION = "1.0"
@@ -71,4 +72,5 @@ def create_v1_router(authentication_enabled: bool) -> APIRouter:
     router.include_router(prompts_router)
     router.include_router(projects_router)
     router.include_router(users_router)
+    router.include_router(usage_router)
     return router

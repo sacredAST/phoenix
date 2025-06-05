@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Annotated, Any, ClassVar, Optional
 
 import strawberry
+import pandas as pd
 from aioitertools.itertools import islice
 from openinference.semconv.trace import SpanAttributes
 from sqlalchemy import desc, distinct, func, or_, select
@@ -148,10 +149,31 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
-        return 171
-        return await info.context.data_loaders.record_counts.load(
-            ("trace", self.project_rowid, time_range, None),
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("user_info", self.project_rowid, time_range),
         )
+
+        user_info_data = [
+            {
+                "user_id": user_info.user_id,
+                "name": user_info.name,
+                "email": user_info.email,
+                "last_login": user_info.last_login,
+            }
+            for user_info in data
+        ]
+
+        print(f">>>>>>>> data <<<<<<<< \n {user_info_data}")
+
+        user_info = pd.DataFrame(user_info_data)
+        user_count = user_info['user_id'].nunique()
+        # user_info['last_login'] = pd.to_datetime(user_info['last_login'])
+        # user_info['date'] = user_info['last_login'].dt.date
+        # user_info['year_month'] = user_info['last_login'].dt.to_period('M')
+        # monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
+        # daily_active_users = user_info.groupby('date')['user_id'].nunique()
+        
+        return user_count
     
     @strawberry.field
     async def count_of_conversation(

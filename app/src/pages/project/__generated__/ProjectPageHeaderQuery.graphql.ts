@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<51de0999cfddf167080b939dc6c1769e>>
+ * @generated SignedSource<<f62d5fe7c2636a29483eb2405cd579ba>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -176,6 +176,48 @@ return {
               },
               {
                 "alias": null,
+                "args": (v4/*: any*/),
+                "kind": "ScalarField",
+                "name": "userCount",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v4/*: any*/),
+                "kind": "ScalarField",
+                "name": "countOfConversation",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v4/*: any*/),
+                "kind": "ScalarField",
+                "name": "messageCount",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v4/*: any*/),
+                "kind": "ScalarField",
+                "name": "avgMonthlyActiveUsers",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v4/*: any*/),
+                "kind": "ScalarField",
+                "name": "avgDailyActiveUsers",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v4/*: any*/),
+                "kind": "ScalarField",
+                "name": "avgMessagesPerConversation",
+                "storageKey": null
+              },
+              {
+                "alias": null,
                 "args": null,
                 "kind": "ScalarField",
                 "name": "spanAnnotationNames",
@@ -198,16 +240,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "07dd4c3e5140047af720772d246e2f4c",
+    "cacheID": "2cc92dc7866c199f33c25748e7dc555d",
     "id": null,
     "metadata": {},
     "name": "ProjectPageHeaderQuery",
     "operationKind": "query",
-    "text": "query ProjectPageHeaderQuery(\n  $timeRange: TimeRange\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ProjectPageHeader_stats\n    id\n  }\n}\n\nfragment ProjectPageHeader_stats on Project {\n  traceCount(timeRange: $timeRange)\n  tokenCountTotal(timeRange: $timeRange)\n  tokenCountPrompt(timeRange: $timeRange)\n  tokenCountCompletion(timeRange: $timeRange)\n  latencyMsP50: latencyMsQuantile(probability: 0.5, timeRange: $timeRange)\n  latencyMsP99: latencyMsQuantile(probability: 0.99, timeRange: $timeRange)\n  spanAnnotationNames\n  documentEvaluationNames\n  id\n}\n"
+    "text": "query ProjectPageHeaderQuery(\n  $timeRange: TimeRange\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ProjectPageHeader_stats\n    id\n  }\n}\n\nfragment ProjectPageHeader_stats on Project {\n  traceCount(timeRange: $timeRange)\n  tokenCountTotal(timeRange: $timeRange)\n  tokenCountPrompt(timeRange: $timeRange)\n  tokenCountCompletion(timeRange: $timeRange)\n  latencyMsP50: latencyMsQuantile(probability: 0.5, timeRange: $timeRange)\n  latencyMsP99: latencyMsQuantile(probability: 0.99, timeRange: $timeRange)\n  userCount(timeRange: $timeRange)\n  countOfConversation(timeRange: $timeRange)\n  messageCount(timeRange: $timeRange)\n  avgMonthlyActiveUsers(timeRange: $timeRange)\n  avgDailyActiveUsers(timeRange: $timeRange)\n  avgMessagesPerConversation(timeRange: $timeRange)\n  spanAnnotationNames\n  documentEvaluationNames\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "e110b84031cc6bfa6bb37751b9c69765";
+(node as any).hash = "2dd02ec34f32de9a25ff78a48d556a6d";
 
 export default node;

@@ -131,7 +131,6 @@ async def get_projects(
         project_responses = [_to_project_response(project) for project in projects]
     return GetProjectsResponseBody(next_cursor=next_cursor, data=project_responses)
 
-
 @router.get(
     "/projects/{project_identifier}",
     operation_id="getProject",

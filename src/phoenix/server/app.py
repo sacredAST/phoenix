@@ -104,6 +104,7 @@ from phoenix.server.api.dataloaders import (
     SpanDescendantsDataLoader,
     SpanProjectsDataLoader,
     TableFieldsDataLoader,
+    UsageFieldsDataLoader,
     TokenCountDataLoader,
     TraceByTraceIdsDataLoader,
     TraceRetentionPolicyIdByProjectIdDataLoader,
@@ -659,6 +660,7 @@ def create_graphql_router(
                 num_child_spans=NumChildSpansDataLoader(db),
                 num_spans_per_trace=NumSpansPerTraceDataLoader(db),
                 project_fields=TableFieldsDataLoader(db, models.Project),
+                usage_fields=UsageFieldsDataLoader(db),
                 projects_by_trace_retention_policy_id=ProjectIdsByTraceRetentionPolicyIdDataLoader(
                     db
                 ),

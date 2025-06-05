@@ -40,6 +40,7 @@ from .trace_retention_policy_id_by_project_id import TraceRetentionPolicyIdByPro
 from .trace_root_spans import TraceRootSpansDataLoader
 from .user_roles import UserRolesDataLoader
 from .users import UsersDataLoader
+from .usages import UsageFieldsDataLoader
 
 __all__ = [
     "CacheForDataLoaders",
@@ -80,6 +81,7 @@ __all__ = [
     "SpanAnnotationsDataLoader",
     "UsersDataLoader",
     "UserRolesDataLoader",
+    "UsageFieldsDataLoader"
 ]
 
 

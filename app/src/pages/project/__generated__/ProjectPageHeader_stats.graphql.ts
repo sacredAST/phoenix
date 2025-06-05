@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<bbcb7bd2a35dccc26420a83a2331f935>>
+ * @generated SignedSource<<70561c5e7adfa858802327dedaef99c3>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,21 +11,21 @@
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type ProjectPageHeader_stats$data = {
-  readonly userCount: number;
-  readonly countOfConversation: number;
-  readonly messageCount: number;
-  readonly avgMonthlyActiveUsers: number;
   readonly avgDailyActiveUsers: number;
   readonly avgMessagesPerConversation: number;
+  readonly avgMonthlyActiveUsers: number;
+  readonly countOfConversation: number;
   readonly documentEvaluationNames: ReadonlyArray<string>;
   readonly id: string;
   readonly latencyMsP50: number | null;
   readonly latencyMsP99: number | null;
+  readonly messageCount: number;
   readonly spanAnnotationNames: ReadonlyArray<string>;
   readonly tokenCountCompletion: number;
   readonly tokenCountPrompt: number;
   readonly tokenCountTotal: number;
   readonly traceCount: number;
+  readonly userCount: number;
   readonly " $fragmentType": "ProjectPageHeader_stats";
 };
 export type ProjectPageHeader_stats$key = {
@@ -125,6 +125,48 @@ return {
     },
     {
       "alias": null,
+      "args": (v1/*: any*/),
+      "kind": "ScalarField",
+      "name": "userCount",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": (v1/*: any*/),
+      "kind": "ScalarField",
+      "name": "countOfConversation",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": (v1/*: any*/),
+      "kind": "ScalarField",
+      "name": "messageCount",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": (v1/*: any*/),
+      "kind": "ScalarField",
+      "name": "avgMonthlyActiveUsers",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": (v1/*: any*/),
+      "kind": "ScalarField",
+      "name": "avgDailyActiveUsers",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": (v1/*: any*/),
+      "kind": "ScalarField",
+      "name": "avgMessagesPerConversation",
+      "storageKey": null
+    },
+    {
+      "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "spanAnnotationNames",
@@ -150,6 +192,6 @@ return {
 };
 })();
 
-(node as any).hash = "e110b84031cc6bfa6bb37751b9c69765";
+(node as any).hash = "2dd02ec34f32de9a25ff78a48d556a6d";
 
 export default node;

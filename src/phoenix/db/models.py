@@ -1476,3 +1476,29 @@ class ProjectAnnotationConfig(Base):
     )
 
     __table_args__ = (UniqueConstraint("project_id", "annotation_config_id"),)
+
+class UserInfo(Base):
+    __tablename__ = "user_info"
+    
+    project_id: Mapped[str]
+    user_id: Mapped[str]
+    name: Mapped[Optional[str]]
+    email: Mapped[Optional[str]]
+    last_login: Mapped[str]
+
+class MessageInfo(Base):
+    __tablename__ = "message_info"
+
+    project_id: Mapped[str]
+    user_id: Mapped[str]
+    message_id: Mapped[str]
+    conversation_id: Mapped[str]
+    timestamp: Mapped[str]
+
+class ConversationInfo(Base):
+    __tablename__ = "conversation_info"
+
+    project_id: Mapped[str]
+    conversation_id: Mapped[str]
+    last_interaction: Mapped[Optional[str]]
+    user_id: Mapped[Optional[str]]
