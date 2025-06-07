@@ -46,8 +46,10 @@ def main():
 
     # client.usages.insert_user_info(project_name=project_name, user_info_dataframe= user_info_all[['user_id', 'name', 'email', 'last_login']])
     
-    client.usages.insert_message_info(project_name=project_name, message_info_dataframe=messages_all[['user_id', 'message_id', 'conversation_id', 'timestamp']])
-    
+    # client.usages.insert_message_info(project_name=project_name, message_info_dataframe=messages_all[['user_id', 'message_id', 'conversation_id', 'timestamp']])
+
+    client.usages.insert_conversation_info(project_name=project_name, conversation_info_dataframe = conversations_all[['user_id', 'conversation_id', 'last_interaction']])
+
     # user_infos = client.usages.get_user_info(project_name=project_name)
 
     # print(user_infos)

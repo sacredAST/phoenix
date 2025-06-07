@@ -153,6 +153,9 @@ class Project(Node):
             ("user_info", self.project_rowid, time_range),
         )
 
+        if len(data) == 0:
+            return 0
+
         user_info_data = [
             {
                 "user_id": user_info.user_id,
@@ -163,7 +166,7 @@ class Project(Node):
             for user_info in data
         ]
 
-        print(f">>>>>>>> data <<<<<<<< \n {user_info_data}")
+        print(f">>>>>>>> user data <<<<<<<< \n {user_info_data}")
 
         user_info = pd.DataFrame(user_info_data)
         user_count = user_info['user_id'].nunique()
@@ -181,10 +184,27 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
-        return 199
-        return await info.context.data_loaders.record_counts.load(
-            ("trace", self.project_rowid, time_range, None),
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("conversation_info", self.project_rowid, time_range),
         )
+
+        if len(data) == 0:
+            return 0
+
+        conversation_info_data = [
+            {
+                "user_id": conversation_info.user_id,
+                "conversation_id": conversation_info.conversation_id,
+                "last_interaction": conversation_info.last_interaction,
+            }
+            for conversation_info in data
+        ]
+
+
+        conversation_info = pd.DataFrame(conversation_info_data)
+        conversation_count = conversation_info['conversation_id'].nunique()
+        
+        return conversation_count
     
     @strawberry.field
     async def message_count(
@@ -192,10 +212,28 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
-        return 720
-        return await info.context.data_loaders.record_counts.load(
-            ("trace", self.project_rowid, time_range, None),
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("message_info", self.project_rowid, time_range),
         )
+
+        if len(data) == 0:
+            return 0
+
+        message_info_data = [
+            {
+                "user_id": message_info.user_id,
+                "message_id": message_info.message_id,
+                "conversation_id": message_info.conversation_id,
+                "timestamp": message_info.timestamp,
+            }
+            for message_info in data
+        ]
+
+
+        message_info = pd.DataFrame(message_info_data)
+        message_count = message_info['message_id'].nunique()
+        
+        return message_count
     
     @strawberry.field
     async def avg_monthly_active_users(
@@ -203,10 +241,33 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> float:
-        return 147.67
-        return await info.context.data_loaders.record_counts.load(
-            ("trace", self.project_rowid, time_range, None),
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("user_info", self.project_rowid, time_range),
         )
+
+        if len(data) == 0:
+            return 0
+
+        user_info_data = [
+            {
+                "user_id": user_info.user_id,
+                "name": user_info.name,
+                "email": user_info.email,
+                "last_login": user_info.last_login,
+            }
+            for user_info in data
+        ]
+
+
+        user_info = pd.DataFrame(user_info_data)
+        print('-----', type(user_info['last_login']))
+        user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
+        # user_info['date'] = user_info['last_login'].dt.date
+        user_info['year_month'] = user_info['last_login'].dt.to_period('M')
+        monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
+        # daily_active_users = user_info.groupby('date')['user_id'].nunique()
+        
+        return float(monthly_active_users.mean())
     
     @strawberry.field
     async def avg_daily_active_users(
@@ -214,10 +275,33 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> float:
-        return 9.27
-        return await info.context.data_loaders.record_counts.load(
-            ("trace", self.project_rowid, time_range, None),
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("user_info", self.project_rowid, time_range),
         )
+
+        if len(data) == 0:
+            return 0
+
+        user_info_data = [
+            {
+                "user_id": user_info.user_id,
+                "name": user_info.name,
+                "email": user_info.email,
+                "last_login": user_info.last_login,
+            }
+            for user_info in data
+        ]
+
+
+        user_info = pd.DataFrame(user_info_data)
+        print('-----', type(user_info['last_login']))
+        user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
+        user_info['date'] = user_info['last_login'].dt.date
+        # user_info['year_month'] = user_info['last_login'].dt.to_period('M')
+        # monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
+        daily_active_users = user_info.groupby('date')['user_id'].nunique()
+        
+        return float(daily_active_users.mean())
     
     @strawberry.field
     async def avg_messages_per_conversation(
@@ -225,10 +309,52 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> float:
-        return 3.62
-        return await info.context.data_loaders.record_counts.load(
-            ("trace", self.project_rowid, time_range, None),
+
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("message_info", self.project_rowid, time_range),
         )
+
+        if len(data) == 0:
+            return 0
+
+        message_info_data = [
+            {
+                "user_id": message_info.user_id,
+                "message_id": message_info.message_id,
+                "conversation_id": message_info.conversation_id,
+                "timestamp": message_info.timestamp,
+            }
+            for message_info in data
+        ]
+
+
+        message_info = pd.DataFrame(message_info_data)
+        message_count = message_info['message_id'].nunique()
+
+
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("conversation_info", self.project_rowid, time_range),
+        )
+
+        if len(data) == 0:
+            return 0
+
+        conversation_info_data = [
+            {
+                "user_id": conversation_info.user_id,
+                "conversation_id": conversation_info.conversation_id,
+                "last_interaction": conversation_info.last_interaction,
+            }
+            for conversation_info in data
+        ]
+
+
+        conversation_info = pd.DataFrame(conversation_info_data)
+        conversation_count = conversation_info['conversation_id'].nunique()
+        
+        return message_count / conversation_count
+        
+                        
 
     @strawberry.field
     async def token_count_total(

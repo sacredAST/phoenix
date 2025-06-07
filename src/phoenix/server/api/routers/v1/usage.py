@@ -11,7 +11,8 @@ from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import (
     ExportTraceServiceRequest,
     ExportTraceServiceResponse,
 )
-from pydantic import Field
+from pydantic import Field, BaseModel
+from datetime import datetime
 from sqlalchemy import insert, select
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import State
@@ -34,6 +35,12 @@ from phoenix.utilities.project import get_project_name
 
 from .models import V1RoutesBaseModel
 from .utils import RequestBody, ResponseBody, add_errors_to_responses
+
+class MessageInfoSchema(BaseModel):
+    user_id: str
+    message_id: str
+    conversation_id: int
+    timestamp: datetime
 
 router = APIRouter(tags=["usages"])
 
@@ -158,8 +165,8 @@ async def insert_message_info(
                 project_id=project_id,
                 user_id=row['user_id'],
                 message_id=row['message_id'],
-                conversation_id=row['conversation_id'],
-                timestamp=row['timestamp']
+                conversation_id=str(row['conversation_id']),
+                timestamp=str(row['timestamp'])
             )
             session.add(new_message_info)
 
@@ -208,6 +215,94 @@ async def get_message_info(
     ]
 
     return JSONResponse(content=message_info_list)
+
+@router.post(
+    "/projects/{project_id}/usages_conversation_info",
+    operation_id="Insert conversation informations",
+    summary="insert conversation info",
+    responses=add_errors_to_responses(
+        [
+            HTTP_404_NOT_FOUND,
+            HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
+    ),
+)
+
+
+async def insert_conversation_info(
+    request: Request,
+    project_id: str = Path(
+        description=(
+            "The project identifier: either project ID or project name. If using a project name, "
+            "it cannot contain slash (/), question mark (?), or pound sign (#) characters."
+        )
+    ),
+) -> JSONResponse:
+    
+    body = await request.body()
+    body_data = body.decode('utf-8')
+    json_data = json.loads(body_data)
+
+    conversation_info_df = pd.read_json(json_data, orient="records")
+
+    print(conversation_info_df[['user_id', 'conversation_id', 'last_interaction']])
+
+    async with request.app.state.db() as session:
+        for index, row in conversation_info_df.iterrows():
+            print(f"{row['user_id']} | {row['conversation_id']} | {row['last_interaction']}")
+            new_conversation_info = models.ConversationInfo(
+                project_id=project_id,
+                user_id=row['user_id'],
+                conversation_id=str(row['conversation_id']),
+                last_interaction=str(row['last_interaction'])
+            )
+            session.add(new_conversation_info)
+
+    return JSONResponse("{}")
+
+@router.get(
+    "/projects/{project_id}/usages_conversation_info",
+    operation_id="Get conversation informations",
+    summary="get conversation info",
+    responses=add_errors_to_responses(
+        [
+            HTTP_404_NOT_FOUND,
+            HTTP_422_UNPROCESSABLE_ENTITY,
+        ]
+    ),
+)
+async def get_conversation_info(
+    request: Request,
+    project_id: str = Path(
+        description=(
+            "The project identifier: either project ID or project name. If using a project name, "
+            "it cannot contain slash (/), question mark (?), or pound sign (#) characters."
+        )
+    ),
+    limit: int = Query(default=100, gt=0, le=1000, description="Maximum number of user informations!"),
+) -> JSONResponse:
+    async with request.app.state.db() as session:
+        stmt = (
+            select(models.ConversationInfo)
+            .where(
+                models.ConversationInfo.project_id == project_id,
+            )
+            .limit(limit)
+        )
+        result = await session.execute(stmt)
+    conversation_info_rows = result.scalars().all()
+
+    conversation_info_list = [
+        {
+            "user_id": conversation_info.user_id,
+            "conversation_id": conversation_info.conversation_id,
+            "last_interaction": conversation_info.last_interaction,
+        }
+        for conversation_info in conversation_info_rows
+    ]
+
+    return JSONResponse(content=conversation_info_list)
+
 
 class TraceAnnotationResult(V1RoutesBaseModel):
     label: Optional[str] = Field(default=None, description="The label assigned by the annotation")

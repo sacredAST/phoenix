@@ -100,6 +100,8 @@ class Usages:
         json_data = message_info_dataframe.to_json(orient="records")
         url = f"v1/projects/{project_name}/usages_message_info"
 
+        print('------> type of timeout', type(timeout))
+
         response = self._client.post(
             url=url,
             json=json_data,
@@ -123,7 +125,61 @@ class Usages:
                 "Install it with 'pip install pandas'"
             )
 
-        url = f"v1/projects/{project_name}/usages_user_info"
+        url = f"v1/projects/{project_name}/usages_message_info"
+
+        response = self._client.get(
+            url=url,
+            timeout=timeout
+        )
+        response.raise_for_status()
+        
+        return response.json()
+
+    def insert_conversation_info(
+        self,
+        *,
+        conversation_info_dataframe: Optional["pd.DataFrame"] = None,
+        project_name: str,
+        timeout: Optional[int] = DEFAULT_TIMEOUT_IN_SECONDS,
+    ):
+        try:
+            import pandas as pd
+        except ImportError:  # pragma: no cover
+            raise ImportError(
+                "pandas is required to use get_span_annotations_dataframe. "
+                "Install it with 'pip install pandas'"
+            )
+
+        if conversation_info_dataframe is None:
+            raise ValueError("Provide exactly 'conversation_info_dataframe'")
+        
+        json_data = conversation_info_dataframe.to_json(orient="records")
+        url = f"v1/projects/{project_name}/usages_conversation_info"
+
+        response = self._client.post(
+            url=url,
+            json=json_data,
+            timeout=timeout
+        )
+        response.raise_for_status()
+        
+        return response.json()
+
+    def get_conversation_info(
+        self,
+        *,
+        project_name: str,
+        timeout: Optional[int] = DEFAULT_TIMEOUT_IN_SECONDS,
+    ):
+        try:
+            import pandas as pd
+        except ImportError:  # pragma: no cover
+            raise ImportError(
+                "pandas is required to use get_span_annotations_dataframe. "
+                "Install it with 'pip install pandas'"
+            )
+
+        url = f"v1/projects/{project_name}/usages_conversation_info"
 
         response = self._client.get(
             url=url,
