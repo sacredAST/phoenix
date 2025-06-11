@@ -70,6 +70,7 @@ async def insert_user_info(
     json_data = json.loads(body_data)
 
     user_info_df = pd.read_json(json_data, orient="records")
+    user_info_df['last_login'] = pd.to_datetime(user_info_df['last_login'])
 
     async with request.app.state.db() as session:
         for index, row in user_info_df.iterrows():
@@ -121,7 +122,7 @@ async def get_user_info(
             "user_id": user_info.user_id,
             "name": user_info.name,
             "email": user_info.email,
-            "last_login": user_info.last_login,
+            "last_login": user_info.last_login.isoformat(),
             "project_id": user_info.project_id
         }
         for user_info in user_info_rows
@@ -155,8 +156,7 @@ async def insert_message_info(
     json_data = json.loads(body_data)
 
     message_info_df = pd.read_json(json_data, orient="records")
-
-    print(message_info_df[['user_id', 'message_id', 'conversation_id', 'timestamp']])
+    message_info_df['timestamp'] = pd.to_datetime(message_info_df['timestamp'])
 
     async with request.app.state.db() as session:
         for index, row in message_info_df.iterrows():
@@ -166,7 +166,7 @@ async def insert_message_info(
                 user_id=row['user_id'],
                 message_id=row['message_id'],
                 conversation_id=str(row['conversation_id']),
-                timestamp=str(row['timestamp'])
+                timestamp=row['timestamp']
             )
             session.add(new_message_info)
 
@@ -209,7 +209,7 @@ async def get_message_info(
             "user_id": message_info.user_id,
             "message_id": message_info.message_id,
             "conversation_id": message_info.conversation_id,
-            "timestamp": message_info.timestamp,
+            "timestamp": message_info.timestamp.isoformat(),
         }
         for message_info in message_info_rows
     ]
@@ -244,8 +244,7 @@ async def insert_conversation_info(
     json_data = json.loads(body_data)
 
     conversation_info_df = pd.read_json(json_data, orient="records")
-
-    print(conversation_info_df[['user_id', 'conversation_id', 'last_interaction']])
+    conversation_info_df['last_interaction'] = pd.to_datetime(conversation_info_df['last_interaction'])
 
     async with request.app.state.db() as session:
         for index, row in conversation_info_df.iterrows():
@@ -254,7 +253,7 @@ async def insert_conversation_info(
                 project_id=project_id,
                 user_id=row['user_id'],
                 conversation_id=str(row['conversation_id']),
-                last_interaction=str(row['last_interaction'])
+                last_interaction=row['last_interaction']
             )
             session.add(new_conversation_info)
 
@@ -296,7 +295,7 @@ async def get_conversation_info(
         {
             "user_id": conversation_info.user_id,
             "conversation_id": conversation_info.conversation_id,
-            "last_interaction": conversation_info.last_interaction,
+            "last_interaction": conversation_info.last_interaction.isoformat(),
         }
         for conversation_info in conversation_info_rows
     ]

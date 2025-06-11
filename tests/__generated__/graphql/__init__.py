@@ -867,6 +867,7 @@ class Project(Node):
     countOfConversation: Optional[float] = None
     messageCount: Optional[float] = None
     avgMonthlyActiveUsers: Optional[float] = None
+    monthlyActiveUsers: Optional[list] = None
     avgDailyActiveUsers: Optional[float] = None
     avgMessagesPerConversation: Optional[float] = None
 

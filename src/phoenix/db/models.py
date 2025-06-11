@@ -9,6 +9,7 @@ from sqlalchemy import (
     TIMESTAMP,
     CheckConstraint,
     ColumnElement,
+    DateTime,
     Dialect,
     Float,
     ForeignKey,
@@ -1484,7 +1485,7 @@ class UserInfo(Base):
     user_id: Mapped[str]
     name: Mapped[Optional[str]]
     email: Mapped[Optional[str]]
-    last_login: Mapped[str]
+    last_login: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
 
 class MessageInfo(Base):
     __tablename__ = "message_info"
@@ -1493,12 +1494,12 @@ class MessageInfo(Base):
     user_id: Mapped[str]
     message_id: Mapped[str]
     conversation_id: Mapped[str]
-    timestamp: Mapped[str]
+    timestamp: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
 
 class ConversationInfo(Base):
     __tablename__ = "conversation_info"
 
     project_id: Mapped[str]
     conversation_id: Mapped[str]
-    last_interaction: Mapped[Optional[str]]
+    last_interaction: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     user_id: Mapped[Optional[str]]

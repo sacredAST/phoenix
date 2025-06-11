@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<70561c5e7adfa858802327dedaef99c3>>
+ * @generated SignedSource<<ef60dc942e34e415e92b96e0fb425455>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,14 @@ export type ProjectPageHeader_stats$data = {
   readonly latencyMsP50: number | null;
   readonly latencyMsP99: number | null;
   readonly messageCount: number;
+  readonly messagesOverMonths: ReadonlyArray<{
+    readonly timestamp: string;
+    readonly value: number;
+  }>;
+  readonly monthlyActiveUsers: ReadonlyArray<{
+    readonly timestamp: string;
+    readonly value: number;
+  }>;
   readonly spanAnnotationNames: ReadonlyArray<string>;
   readonly tokenCountCompletion: number;
   readonly tokenCountPrompt: number;
@@ -43,6 +51,22 @@ var v0 = {
 },
 v1 = [
   (v0/*: any*/)
+],
+v2 = [
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "timestamp",
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "value",
+    "storageKey": null
+  }
 ];
 return {
   "argumentDefinitions": [
@@ -154,6 +178,26 @@ return {
     {
       "alias": null,
       "args": (v1/*: any*/),
+      "concreteType": "MonthlyActiverUser",
+      "kind": "LinkedField",
+      "name": "monthlyActiveUsers",
+      "plural": true,
+      "selections": (v2/*: any*/),
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": (v1/*: any*/),
+      "concreteType": "MessagesOverMonth",
+      "kind": "LinkedField",
+      "name": "messagesOverMonths",
+      "plural": true,
+      "selections": (v2/*: any*/),
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": (v1/*: any*/),
       "kind": "ScalarField",
       "name": "avgDailyActiveUsers",
       "storageKey": null
@@ -192,6 +236,6 @@ return {
 };
 })();
 
-(node as any).hash = "2dd02ec34f32de9a25ff78a48d556a6d";
+(node as any).hash = "7a703c4d637447dcdd289fcc7e7ed875";
 
 export default node;

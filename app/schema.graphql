@@ -1562,6 +1562,16 @@ type Point3D {
   z: Float!
 }
 
+type MonthlyActiverUser {
+  timestamp: String!
+  value: Int!
+}
+
+type MessagesOverMonth {
+  timestamp: String!
+  value: Int!
+}
+
 type Project implements Node {
   """The Globally Unique ID of this object"""
   id: ID!
@@ -1588,6 +1598,8 @@ type Project implements Node {
   countOfConversation(timeRange: TimeRange): Float!
   messageCount(timeRange: TimeRange): Float!
   avgMonthlyActiveUsers(timeRange: TimeRange): Float!
+  monthlyActiveUsers(timeRange: TimeRange): [MonthlyActiverUser!]!
+  messagesOverMonths(timeRange: TimeRange): [MessagesOverMonth!]!
   avgDailyActiveUsers(timeRange: TimeRange): Float!
   avgMessagesPerConversation(timeRange: TimeRange): Float!
 

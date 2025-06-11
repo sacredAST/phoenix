@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f62d5fe7c2636a29483eb2405cd579ba>>
+ * @generated SignedSource<<b12513030340d2998f367bacd6eae677>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -53,6 +53,22 @@ v3 = {
 },
 v4 = [
   (v3/*: any*/)
+],
+v5 = [
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "timestamp",
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "value",
+    "storageKey": null
+  }
 ];
 return {
   "fragment": {
@@ -205,6 +221,26 @@ return {
               {
                 "alias": null,
                 "args": (v4/*: any*/),
+                "concreteType": "MonthlyActiverUser",
+                "kind": "LinkedField",
+                "name": "monthlyActiveUsers",
+                "plural": true,
+                "selections": (v5/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v4/*: any*/),
+                "concreteType": "MessagesOverMonth",
+                "kind": "LinkedField",
+                "name": "messagesOverMonths",
+                "plural": true,
+                "selections": (v5/*: any*/),
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": (v4/*: any*/),
                 "kind": "ScalarField",
                 "name": "avgDailyActiveUsers",
                 "storageKey": null
@@ -240,16 +276,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "2cc92dc7866c199f33c25748e7dc555d",
+    "cacheID": "20fa1363922a673c2cde20fe17c8244f",
     "id": null,
     "metadata": {},
     "name": "ProjectPageHeaderQuery",
     "operationKind": "query",
-    "text": "query ProjectPageHeaderQuery(\n  $timeRange: TimeRange\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ProjectPageHeader_stats\n    id\n  }\n}\n\nfragment ProjectPageHeader_stats on Project {\n  traceCount(timeRange: $timeRange)\n  tokenCountTotal(timeRange: $timeRange)\n  tokenCountPrompt(timeRange: $timeRange)\n  tokenCountCompletion(timeRange: $timeRange)\n  latencyMsP50: latencyMsQuantile(probability: 0.5, timeRange: $timeRange)\n  latencyMsP99: latencyMsQuantile(probability: 0.99, timeRange: $timeRange)\n  userCount(timeRange: $timeRange)\n  countOfConversation(timeRange: $timeRange)\n  messageCount(timeRange: $timeRange)\n  avgMonthlyActiveUsers(timeRange: $timeRange)\n  avgDailyActiveUsers(timeRange: $timeRange)\n  avgMessagesPerConversation(timeRange: $timeRange)\n  spanAnnotationNames\n  documentEvaluationNames\n  id\n}\n"
+    "text": "query ProjectPageHeaderQuery(\n  $timeRange: TimeRange\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...ProjectPageHeader_stats\n    id\n  }\n}\n\nfragment ProjectPageHeader_stats on Project {\n  traceCount(timeRange: $timeRange)\n  tokenCountTotal(timeRange: $timeRange)\n  tokenCountPrompt(timeRange: $timeRange)\n  tokenCountCompletion(timeRange: $timeRange)\n  latencyMsP50: latencyMsQuantile(probability: 0.5, timeRange: $timeRange)\n  latencyMsP99: latencyMsQuantile(probability: 0.99, timeRange: $timeRange)\n  userCount(timeRange: $timeRange)\n  countOfConversation(timeRange: $timeRange)\n  messageCount(timeRange: $timeRange)\n  avgMonthlyActiveUsers(timeRange: $timeRange)\n  monthlyActiveUsers(timeRange: $timeRange) {\n    timestamp\n    value\n  }\n  messagesOverMonths(timeRange: $timeRange) {\n    timestamp\n    value\n  }\n  avgDailyActiveUsers(timeRange: $timeRange)\n  avgMessagesPerConversation(timeRange: $timeRange)\n  spanAnnotationNames\n  documentEvaluationNames\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "2dd02ec34f32de9a25ff78a48d556a6d";
+(node as any).hash = "7a703c4d637447dcdd289fcc7e7ed875";
 
 export default node;

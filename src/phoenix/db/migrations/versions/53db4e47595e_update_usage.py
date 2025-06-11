@@ -23,7 +23,7 @@ def upgrade() -> None:
     op.create_table('conversation_info',
     sa.Column('project_id', sa.String(), nullable=False),
     sa.Column('conversation_id', sa.String(), nullable=False),
-    sa.Column('last_interaction', sa.String(), nullable=True),
+    sa.Column('last_interaction', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.String(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_conversation_info'))
@@ -33,7 +33,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.String(), nullable=False),
     sa.Column('message_id', sa.String(), nullable=False),
     sa.Column('conversation_id', sa.String(), nullable=False),
-    sa.Column('timestamp', sa.String(), nullable=False),
+    sa.Column('timestamp', sa.DateTime(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_message_info'))
     )
@@ -42,7 +42,7 @@ def upgrade() -> None:
     sa.Column('user_id', sa.String(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('email', sa.String(), nullable=True),
-    sa.Column('last_login', sa.String(), nullable=False),
+    sa.Column('last_login', sa.DateTime(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_user_info'))
     )

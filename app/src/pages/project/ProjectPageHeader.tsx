@@ -19,6 +19,19 @@ import { ProjectPageHeader_stats$key } from "./__generated__/ProjectPageHeader_s
 import { ProjectPageHeaderQuery } from "./__generated__/ProjectPageHeaderQuery.graphql";
 import { AnnotationSummary } from "./AnnotationSummary";
 import { DocumentEvaluationSummary } from "./DocumentEvaluationSummary";
+import { CartesianGrid, LineChart, XAxis, YAxis, Line, ResponsiveContainer, Tooltip, Legend } from "recharts";
+
+
+// Demo data
+const ddata = [
+  { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
+  { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
+  { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
+  { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
+  { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
+  { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
+  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
+];
 
 export function ProjectPageHeader(props: {
   project: ProjectPageHeader_stats$key;
@@ -52,6 +65,8 @@ export function ProjectPageHeader(props: {
         countOfConversation(timeRange: $timeRange)
         messageCount(timeRange: $timeRange)
         avgMonthlyActiveUsers(timeRange: $timeRange)
+        monthlyActiveUsers(timeRange: $timeRange) {timestamp value}
+        messagesOverMonths(timeRange: $timeRange) {timestamp value}
         avgDailyActiveUsers(timeRange: $timeRange)
         avgMessagesPerConversation(timeRange: $timeRange)
         spanAnnotationNames
@@ -65,7 +80,7 @@ export function ProjectPageHeader(props: {
   useEffect(() => {
     startTransition(() => {
       refetch({}, { fetchPolicy: "store-and-network" });
-    });
+    });    
   }, [fetchKey, refetch]);
 
   const latencyMsP50 = data?.latencyMsP50;
@@ -77,12 +92,16 @@ export function ProjectPageHeader(props: {
   const countOfConversation = data?.countOfConversation;
   const messageCount = data?.messageCount;
   const avgMonthlyActiveUsers = data?.avgMonthlyActiveUsers;
+  const monthlyActiveUsers = data?.monthlyActiveUsers;
+  const messagesOverMonths = data?.messagesOverMonths;
   const avgDailyActiveUsers = data?.avgDailyActiveUsers;
   const avgMessagesPerConversation = data?.avgMessagesPerConversation;
   const spanAnnotationNames = data?.spanAnnotationNames?.filter(
     (name) => name !== "note"
   );
   const documentEvaluationNames = data?.documentEvaluationNames;
+
+  console.log('data', monthlyActiveUsers);
 
   return (
     <View
@@ -148,6 +167,27 @@ export function ProjectPageHeader(props: {
               Average Messages per Conversation
             </Text>
           </Flex>
+        </Flex>
+
+        <Flex direction="row" alignItems="center">
+          <LineChart width={500} height={300} data={monthlyActiveUsers}>
+            <XAxis dataKey="timestamp" padding={{left: 30, right: 30}}/>
+            <YAxis/>
+            <Tooltip />
+            <Legend />
+            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+            {/* <Line type="monotone" dataKey="timestamp" stroke="#8884d8" /> */}
+            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+          </LineChart>
+          <LineChart width={500} height={300} data={messagesOverMonths}>
+            <XAxis dataKey="timestamp" padding={{left: 30, right: 30}}/>
+            <YAxis/>
+            <Tooltip />
+            <Legend />
+            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+            {/* <Line type="monotone" dataKey="timestamp" stroke="#8884d8" /> */}
+            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+          </LineChart>
         </Flex>
         <Flex direction="row" justifyContent="space-between" alignItems="center" width="100%">
           <div

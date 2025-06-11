@@ -50,6 +50,15 @@ DEFAULT_PAGE_SIZE = 30
 if TYPE_CHECKING:
     from phoenix.server.api.types.ProjectTraceRetentionPolicy import ProjectTraceRetentionPolicy
 
+@strawberry.type
+class MonthlyActiveUser:
+    timestamp: str
+    value: int
+
+@strawberry.type
+class MessagesOverMonth:
+    timestamp: str
+    value: int
 
 @strawberry.type
 class Project(Node):
@@ -149,6 +158,8 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
+        print('>>>>>>>>>>> Time Range <<<<<<<<<<<')
+        print(time_range)
         data = await info.context.data_loaders.usage_fields._load_fn(
             ("user_info", self.project_rowid, time_range),
         )
@@ -166,7 +177,8 @@ class Project(Node):
             for user_info in data
         ]
 
-        print(f">>>>>>>> user data <<<<<<<< \n {user_info_data}")
+
+        # print(f">>>>>>>> user data <<<<<<<< \n {user_info_data}")
 
         user_info = pd.DataFrame(user_info_data)
         user_count = user_info['user_id'].nunique()
@@ -260,7 +272,7 @@ class Project(Node):
 
 
         user_info = pd.DataFrame(user_info_data)
-        print('-----', type(user_info['last_login']))
+        # print('-----', type(user_info['last_login']))
         user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
         # user_info['date'] = user_info['last_login'].dt.date
         user_info['year_month'] = user_info['last_login'].dt.to_period('M')
@@ -268,6 +280,82 @@ class Project(Node):
         # daily_active_users = user_info.groupby('date')['user_id'].nunique()
         
         return float(monthly_active_users.mean())
+    
+    @strawberry.field
+    async def monthly_active_users(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> list[MonthlyActiveUser]:
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("user_info", self.project_rowid, time_range),
+        )
+
+        if len(data) == 0:
+            return []
+
+        user_info_data = [
+            {
+                "user_id": user_info.user_id,
+                "name": user_info.name,
+                "email": user_info.email,
+                "last_login": user_info.last_login,
+            }
+            for user_info in data
+        ]
+
+        print('>>>>>>>>>>>> user_info_data <<<<<<<<<<<\n', user_info_data)
+
+        user_info = pd.DataFrame(user_info_data)
+        user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
+        # user_info['date'] = user_info['last_login'].dt.date
+        user_info['year_month'] = user_info['last_login'].dt.to_period('M')
+        print('>>>>>>>>>>>> user_info <<<<<<<<<<<\n', user_info)
+
+        monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
+        # daily_active_users = user_info.groupby('date')['user_id'].nunique()
+        print('>>>>>>>>>>>> monthly active users <<<<<<<<<<<\n', monthly_active_users)
+        monthly_active_users_list = [
+            MonthlyActiveUser(timestamp=period.to_timestamp().isoformat(), value=int(value)) for period, value in monthly_active_users.items()
+        ]
+        return monthly_active_users_list
+
+    @strawberry.field
+    async def messages_over_months(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> list[MessagesOverMonth]:
+        print('>>>>>>>>>>>> messages_over_months <<<<<<<<<<<\n')
+
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("message_info", self.project_rowid, time_range),
+        )
+
+        if len(data) == 0:
+            return []
+
+        message_info_data = [
+            {
+                "user_id": message_info.user_id,
+                "message_id": message_info.message_id,
+                "conversation_id": message_info.conversation_id,
+                "timestamp": message_info.timestamp,
+            }
+            for message_info in data
+        ]
+
+
+        message_info = pd.DataFrame(message_info_data)
+        
+        message_info['timestamp'] = pd.to_datetime(message_info['timestamp'])
+        message_info['year_month'] = message_info['timestamp'].dt.to_period('M')
+        messages_over_months = message_info.groupby('year_month')['message_id'].nunique()
+        print('>>>>>>>>>>>> messages_over_months <<<<<<<<<<<\n', messages_over_months)
+        messages_over_months_list = [
+            MessagesOverMonth(timestamp=period.to_timestamp().isoformat(), value=int(value)) for period, value in messages_over_months.items()
+        ]
+        return messages_over_months_list
     
     @strawberry.field
     async def avg_daily_active_users(
@@ -294,7 +382,7 @@ class Project(Node):
 
 
         user_info = pd.DataFrame(user_info_data)
-        print('-----', type(user_info['last_login']))
+        # print('-----', type(user_info['last_login']))
         user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
         user_info['date'] = user_info['last_login'].dt.date
         # user_info['year_month'] = user_info['last_login'].dt.to_period('M')
@@ -352,7 +440,7 @@ class Project(Node):
         conversation_info = pd.DataFrame(conversation_info_data)
         conversation_count = conversation_info['conversation_id'].nunique()
         
-        return message_count / conversation_count
+        return float(message_count / conversation_count)
         
                         
 

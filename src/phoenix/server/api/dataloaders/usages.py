@@ -1,9 +1,9 @@
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Literal, Optional
 
 from cachetools import LFUCache, TTLCache
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, func, select, cast, DateTime
 from strawberry.dataloader import AbstractCache, DataLoader
 from typing_extensions import TypeAlias, assert_never
 
@@ -35,7 +35,7 @@ class UsageFieldsDataLoader(DataLoader[Key, Result]):
             stmt = _get_stmt(
                 kind=kind,
                 project_name=project_name,
-                # time_range=time_range
+                time_range=time_range
             )
             result = await session.execute(stmt)
         rows = result.scalars().all()
@@ -60,13 +60,13 @@ def _get_stmt(
         stmt = select(models.ConversationInfo).where(
                 models.ConversationInfo.project_id == project_name,
         )
-    
+        time_column = models.ConversationInfo.last_interaction
+
     if time_range is not None:
         start_time = time_range.start
         end_time = time_range.end
-        if kind != "conversation_info":
-            if start_time:
-                stmt = stmt.where(start_time <= time_column)
-            if end_time:
-                stmt = stmt.where(time_column < end_time)
+        if start_time:
+            stmt = stmt.where(start_time <= time_column)
+        if end_time:
+            stmt = stmt.where(time_column < end_time)
     return stmt
