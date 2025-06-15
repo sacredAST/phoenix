@@ -362,6 +362,8 @@ export function ProjectsPageContent({
             flex: 1 1 auto;
           `}
         >
+          {/* <UsageMatrixGrid/> */}
+          
           <ProjectsGrid
             projects={projects}
             onDelete={onDelete}
@@ -414,6 +416,58 @@ type ProjectViewComponentProps = {
   isLoadingNext: boolean;
   onSort: (sort: ProjectSort) => void;
 };
+
+// function UsageMatrixGrid() {
+//   return (
+//     <View padding="size-200" width="100%">
+//       <ul
+//         css={css`
+//           display: grid;
+//           grid-template-columns: repeat(
+//             auto-fill,
+//             minmax(var(--ac-global-dimension-size-3600), 1fr)
+//           );
+//           gap: var(--ac-global-dimension-size-200);
+//         `}
+//       >
+       
+//           <li            
+//             css={css`
+//               display: flex;
+//               flex-direction: column;
+//               height: 100%;
+//               & > div {
+//                 height: 100%;
+//               }
+//             `}
+//           >
+//             <Link
+//               title="Usage Metrics"
+//               to={`/usage`}
+//               css={css`
+//                 text-decoration: none;
+//                 display: flex;
+//                 flex-direction: column;
+//                 height: 100%;
+//               `}
+//             >
+//               <UsageMetricsItem />                
+//             </Link>
+//           </li>
+//       </ul>
+//       {/* {hasNext && (
+//         <Flex
+//           width="100%"
+//           justifyContent="center"
+//           alignItems="center"
+//           marginTop="size-200"
+//         >
+//           <LoadMoreButton onLoadMore={loadNext} isLoadingNext={isLoadingNext} />
+//         </Flex>
+//       )} */}
+//     </View>
+//   )
+// }
 
 function ProjectsGrid({
   projects,
@@ -469,6 +523,34 @@ function ProjectsGrid({
             </Link>
           </li>
         ))}
+        {projects?.map((project) => (
+          <li
+            key={project.id}
+            css={css`
+              display: flex;
+              flex-direction: column;
+              height: 100%;
+              & > div {
+                height: 100%;
+              }
+            `}
+          >
+            <Link
+              title="Usage"
+              to={`/projects/${project.id}/usage`}
+              css={css`
+                text-decoration: none;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+              `}
+            >
+              <UsageMetricsItem
+                project={project}
+              />
+            </Link>
+          </li>
+        ))}
       </ul>
       {hasNext && (
         <Flex
@@ -517,6 +599,64 @@ type ProjectItemProps = {
     end: string | undefined;
   };
 };
+
+type UsageItemProps = {
+  project: ProjectsPageProjectsFragment$data["projects"]["edges"][number]["project"];
+};
+
+function UsageMetricsItem({
+  project
+}: UsageItemProps) {
+  const { gradientStartColor, gradientEndColor, endTime } = project;
+  return (
+    <div
+      css={css`
+        padding: var(--ac-global-dimension-size-200);
+        border: 1px solid var(--ac-global-color-grey-400);
+        background-color: var(--ac-global-color-grey-100);
+        box-shadow:
+          0 0 1px 0px var(--ac-global-color-grey-400) inset,
+          0 0 1px 0px var(--ac-global-color-grey-400);
+        border-radius: var(--ac-global-rounding-medium);
+        transition: border-color 0.2s;
+        &:hover {
+          border-color: var(--ac-global-color-primary);
+        }
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: var(--ac-global-dimension-size-200);
+        height: 100%;
+      `}
+    >
+      <Flex direction="row" justifyContent="space-between" alignItems="start">
+        <Flex direction="row" gap="size-100" alignItems="center" minWidth={0}>
+          <ProjectIcon
+            gradientStartColor={gradientStartColor}
+            gradientEndColor={gradientEndColor}
+          />
+          <Flex direction="column" minWidth={0}>
+            <Heading
+              level={2}
+              css={css`
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                overflow: hidden;
+              `}
+            >
+              Usage Metrics
+            </Heading>
+            <Text color="text-700" size="XS" fontStyle="italic">
+              usage metrics for project - {project.name}
+            </Text>
+          </Flex>
+        </Flex>
+      </Flex>
+    </div>
+  );
+}
 
 function ProjectItem({
   project,

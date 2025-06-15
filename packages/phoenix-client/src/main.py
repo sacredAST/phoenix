@@ -1,6 +1,10 @@
 from phoenix.client import Client
+from phoenix.otel import register
 
 import pandas as pd
+import os
+
+os.environ["PHOENIX_COLLECTOR_ENDPOINT"]='http://localhost:6006'
 
 client = Client()
 
@@ -14,9 +18,16 @@ def load():
 
 
 def main():
-    project_list = client.projects.list()
 
-    conversations_all, messages_all, user_info_all, chunks_all = load()
+
+    tracer_provider = register(
+        project_name="Usage",
+        endpoint="http://localhost:6006/v1/traces",
+        auto_instrument=True
+    )
+
+    project_list = client.projects.list()
+    # conversations_all, messages_all, user_info_all, chunks_all = load()
 
     # user_count = user_info_all['user_id'].nunique()
     # user_info_all['last_login'] = pd.to_datetime(user_info_all['last_login'])
@@ -50,17 +61,17 @@ def main():
 
     # client.usages.insert_conversation_info(project_name=project_name, conversation_info_dataframe = conversations_all[['user_id', 'conversation_id', 'last_interaction']])
 
-    user_infos = client.usages.get_user_info(project_name=project_name)
+    # user_infos = client.usages.get_user_info(project_name=project_name)
 
-    message_info = client.usages.get_message_info(project_name=project_name)
+    # message_info = client.usages.get_message_info(project_name=project_name)
 
-    conversation_info = client.usages.get_conversation_info(project_name=project_name)
+    # conversation_info = client.usages.get_conversation_info(project_name=project_name)
 
-    print(user_infos)
+    # print(user_infos)
 
-    print(message_info)
+    # print(message_info)
 
-    print(conversation_info)
+    # print(conversation_info)
 
 if __name__ == "__main__":
     main()

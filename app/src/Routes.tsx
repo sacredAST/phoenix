@@ -93,6 +93,8 @@ import {
   SupportPage,
   TracePage,
 } from "./pages";
+import { Usage, UsagePage } from "./pages/project/Usage";
+import { UsagesRoot } from "./pages/UsagesRoot";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" errorElement={<ErrorElement />}>
@@ -155,6 +157,14 @@ const router = createBrowserRouter(
               />
             </Route>
           </Route>
+          <Route path="/usage" element={<Usage /> } />
+          <Route
+            path="/usage"
+            // handle={{ crumb: () => "usage" }}
+            element={<UsagesRoot />}
+          >
+            
+          </Route>
           <Route
             path="/projects"
             handle={{ crumb: () => "projects" }}
@@ -170,6 +180,7 @@ const router = createBrowserRouter(
               element={<ProjectRoot />}
             >
               <Route index element={<ProjectIndexPage />} />
+              <Route path="usage" element={<Usage />} />
               <Route element={<ProjectPage />}>
                 <Route path="traces" element={<ProjectTracesPage />}>
                   <Route path=":traceId" element={<TracePage />} />

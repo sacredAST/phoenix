@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<ef60dc942e34e415e92b96e0fb425455>>
+ * @generated SignedSource<<7b83809ba88f86f7170ac7da21ee2898>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,7 +10,7 @@
 
 import { ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type ProjectPageHeader_stats$data = {
+export type UsagePage_stats$data = {
   readonly avgDailyActiveUsers: number;
   readonly avgMessagesPerConversation: number;
   readonly avgMonthlyActiveUsers: number;
@@ -20,11 +20,11 @@ export type ProjectPageHeader_stats$data = {
   readonly latencyMsP50: number | null;
   readonly latencyMsP99: number | null;
   readonly messageCount: number;
-  readonly messagesOverMonths: Array<{
+  readonly messagesOverMonths: ReadonlyArray<{
     readonly timestamp: string;
     readonly value: number;
   }>;
-  readonly monthlyActiveUsers: Array<{
+  readonly monthlyActiveUsers: ReadonlyArray<{
     readonly timestamp: string;
     readonly value: number;
   }>;
@@ -34,14 +34,14 @@ export type ProjectPageHeader_stats$data = {
   readonly tokenCountTotal: number;
   readonly traceCount: number;
   readonly userCount: number;
-  readonly " $fragmentType": "ProjectPageHeader_stats";
+  readonly " $fragmentType": "UsagePage_stats";
 };
-export type ProjectPageHeader_stats$key = {
-  readonly " $data"?: ProjectPageHeader_stats$data;
-  readonly " $fragmentSpreads": FragmentRefs<"ProjectPageHeader_stats">;
+export type UsagePage_stats$key = {
+  readonly " $data"?: UsagePage_stats$data;
+  readonly " $fragmentSpreads": FragmentRefs<"UsagePage_stats">;
 };
 
-import ProjectPageHeaderQuery_graphql from './ProjectPageHeaderQuery.graphql';
+import UsagePageQuery_graphql from './UsagePageQuery.graphql';
 
 const node: ReaderFragment = (function(){
 var v0 = {
@@ -82,14 +82,14 @@ return {
       "fragmentPathInResult": [
         "node"
       ],
-      "operation": ProjectPageHeaderQuery_graphql,
+      "operation": UsagePageQuery_graphql,
       "identifierInfo": {
         "identifierField": "id",
         "identifierQueryVariableName": "id"
       }
     }
   },
-  "name": "ProjectPageHeader_stats",
+  "name": "UsagePage_stats",
   "selections": [
     {
       "alias": null,
@@ -236,6 +236,6 @@ return {
 };
 })();
 
-(node as any).hash = "7a703c4d637447dcdd289fcc7e7ed875";
+(node as any).hash = "8f8e821f5285e12b52ee620ddfbee5af";
 
 export default node;

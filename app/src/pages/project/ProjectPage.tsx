@@ -97,6 +97,38 @@ const TAB_INDEX_MAP: Record<(typeof TABS)[number], number> = {
   config: 3,
 };
 
+export function useProjectPageData(
+  projectId: string,
+  timeRange: OpenTimeRange
+) {
+  const timeRangeVariable = useMemo(() => {
+    return {
+      start: timeRange?.start?.toISOString(),
+      end: timeRange?.end?.toISOString(),
+    };
+  }, [timeRange]);
+
+  return useLazyLoadQuery<ProjectPageQueryType>(
+    graphql`
+      query ProjectPageQuery($id: ID!, $timeRange: TimeRange!) {
+        project: node(id: $id) {
+          ...ProjectPageHeader_stats
+          ...StreamToggle_data
+        }
+      }
+    `,
+    
+    {
+      id: projectId as string,
+      timeRange: timeRangeVariable,
+    },
+    {
+      fetchPolicy: "store-and-network",
+      fetchKey: `${projectId}-${timeRangeVariable.start}-${timeRangeVariable.end}`,
+    }
+  );
+}
+
 export function ProjectPageContent({
   projectId,
   timeRange,
@@ -115,24 +147,7 @@ export function ProjectPageContent({
   }, [timeRange]);
   const navigate = useNavigate();
   const { rootPath, tab } = useProjectRootPath();
-  const data = useLazyLoadQuery<ProjectPageQueryType>(
-    graphql`
-      query ProjectPageQuery($id: ID!, $timeRange: TimeRange!) {
-        project: node(id: $id) {
-          ...ProjectPageHeader_stats
-          ...StreamToggle_data
-        }
-      }
-    `,
-    {
-      id: projectId as string,
-      timeRange: timeRangeVariable,
-    },
-    {
-      fetchPolicy: "store-and-network",
-      fetchKey: `${projectId}-${timeRangeVariable.start}-${timeRangeVariable.end}`,
-    }
-  );
+  const data = useProjectPageData(projectId, timeRange)
   const [tracesQueryReference, loadTracesQuery, disposeTracesQuery] =
     useQueryLoader<ProjectPageTracesQueryType>(ProjectPageQueriesTracesQuery);
   const [spansQueryReference, loadSpansQuery, disposeSpansQuery] =

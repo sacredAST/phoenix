@@ -33,16 +33,8 @@ const ddata = [
   { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
 ];
 
-export function ProjectPageHeader(props: {
-  project: ProjectPageHeader_stats$key;
-  /**
-   * the extra component displayed on the right side of the header
-   */
-  extra: ReactNode;
-}) {
-  const { extra } = props;
-  const { fetchKey } = useStreamState();
-  const [data, refetch] = useRefetchableFragment<
+export function useProjectStats(project: ProjectPageHeader_stats$key) {
+  return useRefetchableFragment<
     ProjectPageHeaderQuery,
     ProjectPageHeader_stats$key
   >(
@@ -73,14 +65,26 @@ export function ProjectPageHeader(props: {
         documentEvaluationNames
       }
     `,
-    props.project
+    project
   );
+}
+
+export function ProjectPageHeader(props: {
+  project: ProjectPageHeader_stats$key;
+  /**
+   * the extra component displayed on the right side of the header
+   */
+  extra: ReactNode;
+}) {
+  const { extra } = props;
+  const { fetchKey } = useStreamState();
+  const [data, refetch] = useProjectStats(props.project);
 
   // Refetch the count of traces if the fetchKey changes
   useEffect(() => {
     startTransition(() => {
       refetch({}, { fetchPolicy: "store-and-network" });
-    });    
+    });
   }, [fetchKey, refetch]);
 
   const latencyMsP50 = data?.latencyMsP50;
@@ -88,14 +92,7 @@ export function ProjectPageHeader(props: {
   const tokenCountTotal = data?.tokenCountTotal;
   const tokenCountPrompt = data?.tokenCountPrompt;
   const tokenCountCompletion = data?.tokenCountCompletion;
-  const userCount = data?.userCount;
-  const countOfConversation = data?.countOfConversation;
-  const messageCount = data?.messageCount;
-  const avgMonthlyActiveUsers = data?.avgMonthlyActiveUsers;
   const monthlyActiveUsers = data?.monthlyActiveUsers;
-  const messagesOverMonths = data?.messagesOverMonths;
-  const avgDailyActiveUsers = data?.avgDailyActiveUsers;
-  const avgMessagesPerConversation = data?.avgMessagesPerConversation;
   const spanAnnotationNames = data?.spanAnnotationNames?.filter(
     (name) => name !== "note"
   );
@@ -112,83 +109,6 @@ export function ProjectPageHeader(props: {
       flex="none"
     >
       <Flex direction="column" justifyContent="space-between" alignItems="center">
-        <Flex direction="row" gap="size-400" alignItems="center" marginBottom={10}>
-          <Flex direction="column" flex="none" alignItems="center">
-            <Text elementType="h2" size="XL">{intFormatter(userCount)}</Text>
-            <Text css={css`
-                text-align: center;
-              `} size="XS" color="text-700"  maxWidth={150}
-            >
-              User Count
-            </Text>
-          </Flex>
-          <Flex direction="column" flex="none" alignItems="center">
-            <Text elementType="h2" size="XL">{intFormatter(countOfConversation)}</Text>
-            <Text css={css`
-                text-align: center;
-              `} size="XS" color="text-700"  maxWidth={150}
-            >
-              Count of conversation
-            </Text>
-          </Flex>
-          <Flex direction="column" flex="none" alignItems="center">
-            <Text elementType="h2" size="XL">{intFormatter(messageCount)}</Text>
-            <Text css={css`
-                text-align: center;
-              `} size="XS" color="text-700"  maxWidth={150}
-            >
-              Message Count
-            </Text>
-          </Flex>
-          <Flex direction="column" flex="none" alignItems="center">
-            <Text elementType="h2" size="XL">{intFormatter(avgMonthlyActiveUsers)}</Text>
-            <Text css={css`
-                text-align: center;
-              `} size="XS" color="text-700"  maxWidth={150}
-            >
-              Average Monthly Active Users
-            </Text>
-          </Flex>
-          <Flex direction="column" flex="none" alignItems="center">
-            <Text elementType="h2" size="XL">{intFormatter(avgDailyActiveUsers)}</Text>
-            <Text css={css`
-                text-align: center;
-              `} size="XS" color="text-700"  maxWidth={150}
-            >
-              Average Daily Active Users
-            </Text>
-          </Flex>
-          <Flex direction="column" flex="none" alignItems="center">
-            <Text elementType="h2" size="XL">{intFormatter(avgMessagesPerConversation)}</Text>
-            <Text css={css`
-                text-align: center;
-              `} size="XS" color="text-700"  maxWidth={150}
-            >
-              Average Messages per Conversation
-            </Text>
-          </Flex>
-        </Flex>
-
-        <Flex direction="row" alignItems="center">
-          <LineChart width={500} height={300} data={monthlyActiveUsers}>
-            <XAxis dataKey="timestamp" padding={{left: 30, right: 30}}/>
-            <YAxis/>
-            <Tooltip />
-            <Legend />
-            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-            {/* <Line type="monotone" dataKey="timestamp" stroke="#8884d8" /> */}
-            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-          </LineChart>
-          <LineChart width={500} height={300} data={messagesOverMonths}>
-            <XAxis dataKey="timestamp" padding={{left: 30, right: 30}}/>
-            <YAxis/>
-            <Tooltip />
-            <Legend />
-            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-            {/* <Line type="monotone" dataKey="timestamp" stroke="#8884d8" /> */}
-            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-          </LineChart>
-        </Flex>
         <Flex direction="row" justifyContent="space-between" alignItems="center" width="100%">
           <div
             css={css`
