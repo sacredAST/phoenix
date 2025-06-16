@@ -28,6 +28,7 @@ import {
   Line,
   Tooltip,
   Legend,
+  Label,
 } from "recharts";
 import { useTimeRange } from "@phoenix/components/datetime";
 import { ProjectPageHeader_stats$key } from "./__generated__/ProjectPageHeader_stats.graphql";
@@ -91,22 +92,57 @@ export function UsagePage(props: {
 
         {/* Line Charts */}
         <Flex direction="row" alignItems="center">
-          <LineChart width={600} height={400} data={monthlyActiveUsers}>
-            <XAxis dataKey="timestamp" padding={{ left: 30, right: 30 }} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-          </LineChart>
-          <LineChart width={600} height={400} data={messagesOverMonths}>
-            <XAxis dataKey="timestamp" padding={{ left: 30, right: 30 }} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-            <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-          </LineChart>
+          
+          
+          <Flex direction="column" alignItems="center">
+
+              <Text>Monthly Active Users</Text>
+
+              <Flex direction="row" alignItems="center">
+                <Text
+                  css={css`
+                    writing-mode: sideways-lr;
+                    text-orientation: mixed;                    
+                    white-space: nowrap;
+                  `}
+                >
+                  User Count
+                </Text>
+                <LineChart width={600} height={400} data={monthlyActiveUsers}>
+                  <XAxis dataKey="timestamp" padding={{ left: 30, right: 30 }} />
+                  <YAxis />
+                  <Tooltip />
+                  {/* <Legend /> */}
+                  {/* <CartesianGrid stroke="#eee" strokeDasharray="3 3" /> */}
+                  <Line type="linear" dataKey="value" stroke="#82ca9d" />
+                </LineChart>
+              </Flex>
+          </Flex>
+          
+          <Flex direction="column" alignItems="center">
+            <Text>Message Over Months</Text>
+            
+            <Flex direction="row" alignItems="center">
+              <Text
+                  css={css`
+                    writing-mode: sideways-lr;
+                    text-orientation: mixed;                    
+                    white-space: nowrap;
+                  `}
+                >
+                  Message Count
+                </Text>
+            <LineChart width={600} height={400} data={messagesOverMonths}>
+              <XAxis dataKey="timestamp" padding={{ left: 30, right: 30 }} />
+              <YAxis />
+              <Tooltip />
+              {/* <Legend /> */}
+              {/* <CartesianGrid stroke="#eee" strokeDasharray="3 3" /> */}
+              <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+            </LineChart>
+            </Flex>
+          </Flex>
+          
         </Flex>
       </Flex>
     </View>
