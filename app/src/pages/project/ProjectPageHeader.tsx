@@ -33,7 +33,7 @@ const ddata = [
   { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
 ];
 
-export function useProjectStats(project: ProjectPageHeader_stats$key) {
+export function useProjectStats(project: ProjectPageHeader_stats$key, departments?: string[]) {
   return useRefetchableFragment<
     ProjectPageHeaderQuery,
     ProjectPageHeader_stats$key
@@ -61,6 +61,12 @@ export function useProjectStats(project: ProjectPageHeader_stats$key) {
         messagesOverMonths(timeRange: $timeRange) {timestamp value}
         avgDailyActiveUsers(timeRange: $timeRange)
         avgMessagesPerConversation(timeRange: $timeRange)
+        usageBySellers(timeRange: $timeRange, departments: $departments) {type count}
+        sellersByWorkRegion(timeRange: $timeRange, departments: $departments) {region count}
+        conversationsByChatMode(timeRange: $timeRange, departments: $departments) { mode rate}
+        conversationsByLanguage(timeRange: $timeRange, departments: $departments) { language rate}
+        responseRatingByUsers(timeRange: $timeRange, departments: $departments) {user rate}
+        departmentList(timeRange: $timeRange)
         spanAnnotationNames
         documentEvaluationNames
       }

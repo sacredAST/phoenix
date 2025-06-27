@@ -61,6 +61,32 @@ class MessagesOverMonth:
     value: int
 
 @strawberry.type
+class UsageBySeller:
+    type: str
+    count: int
+
+@strawberry.type
+class SellerByWorkRegion:
+    region: str
+    count: int
+
+@strawberry.type
+class ConversationByChatMode:
+    mode: str
+    rate: float
+
+@strawberry.type
+class ConversationByLanguage:
+    language: str
+    rate: float
+
+@strawberry.type
+class ResponseRatingByUser:
+    user: str
+    rate: float
+
+
+@strawberry.type
 class Project(Node):
     _table: ClassVar[type[models.Base]] = models.Project
     project_rowid: NodeID[int]
@@ -157,11 +183,10 @@ class Project(Node):
         self,
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
+        department: Optional[str] = None,
     ) -> int:
-        print('>>>>>>>>>>> Time Range <<<<<<<<<<<')
-        print(time_range)
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("user_info", self.project_rowid, time_range),
+            ("user_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -178,16 +203,8 @@ class Project(Node):
         ]
 
 
-        # print(f">>>>>>>> user data <<<<<<<< \n {user_info_data}")
-
         user_info = pd.DataFrame(user_info_data)
         user_count = user_info['user_id'].nunique()
-        # user_info['last_login'] = pd.to_datetime(user_info['last_login'])
-        # user_info['date'] = user_info['last_login'].dt.date
-        # user_info['year_month'] = user_info['last_login'].dt.to_period('M')
-        # monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
-        # daily_active_users = user_info.groupby('date')['user_id'].nunique()
-        
         return user_count
     
     @strawberry.field
@@ -195,9 +212,10 @@ class Project(Node):
         self,
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
+        department: Optional[str] = None,
     ) -> int:
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("conversation_info", self.project_rowid, time_range),
+            ("conversation_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -225,7 +243,7 @@ class Project(Node):
         time_range: Optional[TimeRange] = UNSET,
     ) -> int:
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("message_info", self.project_rowid, time_range),
+            ("message_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -254,7 +272,7 @@ class Project(Node):
         time_range: Optional[TimeRange] = UNSET,
     ) -> float:
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("user_info", self.project_rowid, time_range),
+            ("user_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -272,12 +290,9 @@ class Project(Node):
 
 
         user_info = pd.DataFrame(user_info_data)
-        # print('-----', type(user_info['last_login']))
         user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
-        # user_info['date'] = user_info['last_login'].dt.date
         user_info['year_month'] = user_info['last_login'].dt.to_period('M')
         monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
-        # daily_active_users = user_info.groupby('date')['user_id'].nunique()
         
         return float(monthly_active_users.mean())
     
@@ -285,10 +300,10 @@ class Project(Node):
     async def monthly_active_users(
         self,
         info: Info[Context, None],
-        time_range: Optional[TimeRange] = UNSET,
+        time_range: Optional[TimeRange] = UNSET,        
     ) -> list[MonthlyActiveUser]:
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("user_info", self.project_rowid, time_range),
+            ("user_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -304,17 +319,11 @@ class Project(Node):
             for user_info in data
         ]
 
-        print('>>>>>>>>>>>> user_info_data <<<<<<<<<<<\n', user_info_data)
-
         user_info = pd.DataFrame(user_info_data)
         user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
-        # user_info['date'] = user_info['last_login'].dt.date
         user_info['year_month'] = user_info['last_login'].dt.to_period('M')
-        print('>>>>>>>>>>>> user_info <<<<<<<<<<<\n', user_info)
 
         monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
-        # daily_active_users = user_info.groupby('date')['user_id'].nunique()
-        print('>>>>>>>>>>>> monthly active users <<<<<<<<<<<\n', monthly_active_users)
         monthly_active_users_list = [
             MonthlyActiveUser(timestamp=period.to_timestamp().isoformat(), value=int(value)) for period, value in monthly_active_users.items()
         ]
@@ -326,10 +335,9 @@ class Project(Node):
         info: Info[Context, None],
         time_range: Optional[TimeRange] = UNSET,
     ) -> list[MessagesOverMonth]:
-        print('>>>>>>>>>>>> messages_over_months <<<<<<<<<<<\n')
 
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("message_info", self.project_rowid, time_range),
+            ("message_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -345,13 +353,11 @@ class Project(Node):
             for message_info in data
         ]
 
-
         message_info = pd.DataFrame(message_info_data)
         
         message_info['timestamp'] = pd.to_datetime(message_info['timestamp'])
         message_info['year_month'] = message_info['timestamp'].dt.to_period('M')
         messages_over_months = message_info.groupby('year_month')['message_id'].nunique()
-        print('>>>>>>>>>>>> messages_over_months <<<<<<<<<<<\n', messages_over_months)
         messages_over_months_list = [
             MessagesOverMonth(timestamp=period.to_timestamp().isoformat(), value=int(value)) for period, value in messages_over_months.items()
         ]
@@ -364,7 +370,7 @@ class Project(Node):
         time_range: Optional[TimeRange] = UNSET,
     ) -> float:
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("user_info", self.project_rowid, time_range),
+            ("user_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -380,13 +386,9 @@ class Project(Node):
             for user_info in data
         ]
 
-
         user_info = pd.DataFrame(user_info_data)
-        # print('-----', type(user_info['last_login']))
         user_info['last_login'] = pd.to_datetime(user_info['last_login'], errors='coerce')
         user_info['date'] = user_info['last_login'].dt.date
-        # user_info['year_month'] = user_info['last_login'].dt.to_period('M')
-        # monthly_active_users = user_info.groupby('year_month')['user_id'].nunique()
         daily_active_users = user_info.groupby('date')['user_id'].nunique()
         
         return float(daily_active_users.mean())
@@ -399,7 +401,7 @@ class Project(Node):
     ) -> float:
 
         data = await info.context.data_loaders.usage_fields._load_fn(
-            ("message_info", self.project_rowid, time_range),
+            ("message_info", self.project_rowid, time_range, None),
         )
 
         if len(data) == 0:
@@ -441,8 +443,221 @@ class Project(Node):
         conversation_count = conversation_info['conversation_id'].nunique()
         
         return float(message_count / conversation_count)
+
+
+    @strawberry.field
+    async def usage_by_sellers(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+        departments: Optional[list[str]] = None,
+    ) -> list[UsageBySeller]:
         
-                        
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("user_info", self.project_rowid, time_range, departments),
+        )
+
+        if len(data) == 0:
+            return []
+        
+        print('data', data)
+
+        user_info_data = [
+            {
+                "user_id": user_info.user_id,
+                "name": user_info.name,
+                "email": user_info.email,
+                "last_login": user_info.last_login,
+                "seller_type": user_info.seller_type,
+                "department": user_info.department,
+            }
+            for user_info in data
+        ]
+
+        user_info = pd.DataFrame(user_info_data)
+
+        if departments and len(departments) > 0:
+            user_info = user_info[user_info['department'].isin(departments)]
+
+        seller_counts = user_info['seller_type'].value_counts()
+
+        seller_by_type_list = [
+            UsageBySeller(type=type, count=count) for type, count in seller_counts.items()
+        ]
+        return seller_by_type_list 
+
+    @strawberry.field
+    async def sellers_by_work_region(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+        departments: Optional[list[str]] = None,
+    ) -> list[SellerByWorkRegion]:        
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("user_info", self.project_rowid, time_range, departments),
+        )
+
+        if len(data) == 0:
+            return []
+        
+        user_info_data = [
+            {
+                "user_id": user_info.user_id,
+                "name": user_info.name,
+                "email": user_info.email,
+                "last_login": user_info.last_login,
+                "regionlevel2": user_info.regionlevel2,
+                "department": user_info.department,
+            }
+            for user_info in data
+        ]
+
+
+
+        user_info = pd.DataFrame(user_info_data)
+        
+        if departments and len(departments) > 0:
+            user_info = user_info[user_info['department'].isin(departments)]
+
+        seller_counts = user_info['regionlevel2'].value_counts()
+
+        seller_by_type_list = [
+            SellerByWorkRegion(region=region, count=count) for region, count in seller_counts.items()
+        ]
+        return seller_by_type_list 
+    
+    @strawberry.field
+    async def conversations_by_chat_mode(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+        departments: Optional[list[str]] = None
+    ) -> list[ConversationByChatMode]:        
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("conversation_info", self.project_rowid, time_range, departments),
+        )
+
+        if len(data) == 0:
+            return []
+
+        conversation_info_data = [
+            {
+                "user_id": conversation_info.user_id,
+                "conversation_id": conversation_info.conversation_id,
+                "last_interaction": conversation_info.last_interaction,
+                "chat_mod": conversation_info.chat_mod,
+                "language": conversation_info.language
+            }
+            for conversation_info in data
+        ]
+
+
+        conversation_info = pd.DataFrame(conversation_info_data)
+        conversation_count = conversation_info['chat_mod'].value_counts()
+        converstion_by_chatmod_list = [
+            ConversationByChatMode(mode=mode, rate=count) for mode, count in conversation_count.items()
+        ]
+        return converstion_by_chatmod_list 
+    
+    @strawberry.field
+    async def conversations_by_language(
+        self,
+        info: Info[Context, None],
+        departments: Optional[list[str]] = None,
+        time_range: Optional[TimeRange] = UNSET
+    ) -> list[ConversationByLanguage]:        
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("conversation_info", self.project_rowid, time_range, departments),
+        )
+        print(f" >>>>>>> Department: {departments} <<<<<<<")
+
+        if len(data) == 0:
+            return []
+
+        conversation_info_data = [
+            {
+                "user_id": conversation_info.user_id,
+                "conversation_id": conversation_info.conversation_id,
+                "last_interaction": conversation_info.last_interaction,
+                "chat_mod": conversation_info.chat_mod,
+                "language": conversation_info.language
+            }
+            for conversation_info in data
+        ]
+
+
+        conversation_info = pd.DataFrame(conversation_info_data)
+        conversation_count = conversation_info['language'].value_counts()
+        print('conversatoin_count', conversation_count)
+        converstion_by_language_list = [
+            ConversationByLanguage(language=lan, rate=count) for lan, count in conversation_count.items()
+        ]
+        return converstion_by_language_list 
+        
+    
+    @strawberry.field
+    async def response_rating_by_users(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+        departments: Optional[list[str]] = None
+    ) -> list[ResponseRatingByUser]:        
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("message_info", self.project_rowid, time_range, departments),
+        )
+
+        if len(data) == 0:
+            return []
+
+        message_info_data = [
+            {
+                "user_id": message_info.user_id,
+                "message_id": message_info.message_id,
+                "conversation_id": message_info.conversation_id,
+                "timestamp": message_info.timestamp,
+                "response_feedback_notnull": message_info.response_feedback_notnull,
+            }
+            for message_info in data
+        ]
+
+        message_info = pd.DataFrame(message_info_data)
+        
+     
+        responseRatingByUsers = message_info['response_feedback_notnull'].value_counts()
+        response_rating_by_users_list = [
+            ResponseRatingByUser(user=user, rate=value) for user, value in responseRatingByUsers.items()
+        ]
+        return response_rating_by_users_list
+    
+    @strawberry.field
+    async def department_list(
+        self,
+        info: Info[Context, None],
+        time_range: Optional[TimeRange] = UNSET,
+    ) -> list[str]:
+        data = await info.context.data_loaders.usage_fields._load_fn(
+            ("user_info", self.project_rowid, time_range, None),
+        )
+
+        if len(data) == 0:
+            return []
+
+        user_info_data = [
+            {
+                "user_id": user_info.user_id,
+                "name": user_info.name,
+                "email": user_info.email,
+                "last_login": user_info.last_login,
+                "department": user_info.department,
+            }
+            for user_info in data
+        ]
+
+
+        user_info = pd.DataFrame(user_info_data)
+        departmentList = user_info['department'].to_list()
+        print('deaprtment list', departmentList)
+        return departmentList
 
     @strawberry.field
     async def token_count_total(

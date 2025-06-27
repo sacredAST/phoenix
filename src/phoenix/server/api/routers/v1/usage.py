@@ -70,6 +70,7 @@ async def insert_user_info(
     json_data = json.loads(body_data)
 
     user_info_df = pd.read_json(json_data, orient="records")
+
     user_info_df['last_login'] = pd.to_datetime(user_info_df['last_login'])
 
     async with request.app.state.db() as session:
@@ -79,7 +80,10 @@ async def insert_user_info(
                 user_id = row['user_id'],
                 name = row['name'],
                 email = row['email'],
-                last_login = row['last_login']
+                last_login = row['last_login'],
+                seller_type = row['seller_type'],
+                regionlevel2 = row['regionlevel2'],
+                department = row['department']
             )
             session.add(new_user_info)
 
@@ -123,7 +127,10 @@ async def get_user_info(
             "name": user_info.name,
             "email": user_info.email,
             "last_login": user_info.last_login.isoformat(),
-            "project_id": user_info.project_id
+            "seller_type": user_info.seller_type,
+            "project_id": user_info.project_id,
+            "regionlevel2": user_info.regionlevel2,
+            "department": user_info.department,
         }
         for user_info in user_info_rows
     ]
@@ -166,7 +173,8 @@ async def insert_message_info(
                 user_id=row['user_id'],
                 message_id=row['message_id'],
                 conversation_id=str(row['conversation_id']),
-                timestamp=row['timestamp']
+                timestamp=row['timestamp'],
+                response_feedback_notnull = row['response_feedback_notnull']
             )
             session.add(new_message_info)
 
@@ -210,6 +218,7 @@ async def get_message_info(
             "message_id": message_info.message_id,
             "conversation_id": message_info.conversation_id,
             "timestamp": message_info.timestamp.isoformat(),
+            "response_feedback_notnull": message_info.response_feedback_notnull,
         }
         for message_info in message_info_rows
     ]
@@ -253,7 +262,9 @@ async def insert_conversation_info(
                 project_id=project_id,
                 user_id=row['user_id'],
                 conversation_id=str(row['conversation_id']),
-                last_interaction=row['last_interaction']
+                last_interaction=row['last_interaction'],
+                chat_mod = row['chat_mod'],
+                language = row['language']
             )
             session.add(new_conversation_info)
 
@@ -296,6 +307,8 @@ async def get_conversation_info(
             "user_id": conversation_info.user_id,
             "conversation_id": conversation_info.conversation_id,
             "last_interaction": conversation_info.last_interaction.isoformat(),
+            "chat_mod": conversation_info.chat_mod,
+            "language": conversation_info.language
         }
         for conversation_info in conversation_info_rows
     ]

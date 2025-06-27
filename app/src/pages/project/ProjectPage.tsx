@@ -110,7 +110,7 @@ export function useProjectPageData(
 
   return useLazyLoadQuery<ProjectPageQueryType>(
     graphql`
-      query ProjectPageQuery($id: ID!, $timeRange: TimeRange!) {
+      query ProjectPageQuery($id: ID!, $timeRange: TimeRange!, $departments: [String!]) {
         project: node(id: $id) {
           ...ProjectPageHeader_stats
           ...StreamToggle_data

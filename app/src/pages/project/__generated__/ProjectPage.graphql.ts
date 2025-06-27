@@ -2,7 +2,7 @@
 import { graphql } from 'react-relay';
 
 export const PROJECT_PAGE_QUERY = graphql`
-  query ProjectPageQuery($id: ID!, $timeRange: TimeRange!) {
+  query ProjectPageQuery($id: ID!, $timeRange: TimeRange!, $department: String) {
     project: node(id: $id) {
       ...ProjectPageHeader_stats
       ...StreamToggle_data

@@ -1486,6 +1486,9 @@ class UserInfo(Base):
     name: Mapped[Optional[str]]
     email: Mapped[Optional[str]]
     last_login: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    seller_type: Mapped[Optional[str]]
+    regionlevel2: Mapped[Optional[str]]
+    department: Mapped[Optional[str]]
 
 class MessageInfo(Base):
     __tablename__ = "message_info"
@@ -1495,6 +1498,8 @@ class MessageInfo(Base):
     message_id: Mapped[str]
     conversation_id: Mapped[str]
     timestamp: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    response_feedback_notnull: Mapped[Optional[str]]
+
 
 class ConversationInfo(Base):
     __tablename__ = "conversation_info"
@@ -1503,3 +1508,5 @@ class ConversationInfo(Base):
     conversation_id: Mapped[str]
     last_interaction: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     user_id: Mapped[Optional[str]]
+    chat_mod: Mapped[str]
+    language: Mapped[str]

@@ -290,6 +290,7 @@ function SpanAnnotationsList(props: {
         $annotationIds: [ID!]!
         $timeRange: TimeRange!
         $projectId: ID!
+        $departments: [String!]
       ) {
         deleteSpanAnnotations(input: { annotationIds: $annotationIds }) {
           query {

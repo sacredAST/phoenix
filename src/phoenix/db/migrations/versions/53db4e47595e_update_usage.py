@@ -26,6 +26,8 @@ def upgrade() -> None:
     sa.Column('last_interaction', sa.DateTime(), nullable=True),
     sa.Column('user_id', sa.String(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('chat_mod', sa.String(), nullable=True),
+    sa.Column('language', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_conversation_info'))
     )
     op.create_table('message_info',
@@ -34,7 +36,8 @@ def upgrade() -> None:
     sa.Column('message_id', sa.String(), nullable=False),
     sa.Column('conversation_id', sa.String(), nullable=False),
     sa.Column('timestamp', sa.DateTime(), nullable=False),
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),    
+    sa.Column('response_feedback_notnull', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_message_info'))
     )
     op.create_table('user_info',
@@ -43,6 +46,9 @@ def upgrade() -> None:
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('email', sa.String(), nullable=True),
     sa.Column('last_login', sa.DateTime(), nullable=False),
+    sa.Column('seller_type', sa.String(), nullable=True),
+    sa.Column('department', sa.String(), nullable=True),
+    sa.Column('regionlevel2', sa.String(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_user_info'))
     )

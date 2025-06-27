@@ -693,14 +693,21 @@ class UserInfo(TypedDict):
     name: Optional[str] = ""
     email: Optional[str] = ""
     last_login: Optional[str] = ""
+    seller_type: Optional[str] = ""
+    regionlevel2: Optional[str] = ""
+    department: Optional[str] = ""
 
 class MessageInfo(TypedDict):
     user_id: str
     message_id: str
     conversation_id: str
     timestamp: Optional[str] = ""
+    response_feedback_notnull: Optional[str]
+
 
 class ConversationInfo(TypedDict):
     conversation_id: str
     last_interaction: Optional[str] = ""
     user_id: Optional[str] = ""
+    chat_mod: Optional[str]
+    language: Optional[str]

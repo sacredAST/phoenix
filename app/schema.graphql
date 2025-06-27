@@ -1572,6 +1572,32 @@ type MessagesOverMonth {
   value: Int!
 }
 
+type UsageBySeller {
+  type: String!
+  count: Int!
+}
+
+type SellerByWorkRegion {
+  region: String!
+  count: Int!
+}
+
+type ConversationByChatMode {
+  mode: String!
+  rate: Float!
+}
+
+type ConversationByLanguage {
+  language: String!
+  rate: Float!
+}
+
+type ResponseRatingByUser {
+  user: String!
+  rate: Float!
+}
+
+
 type Project implements Node {
   """The Globally Unique ID of this object"""
   id: ID!
@@ -1602,6 +1628,12 @@ type Project implements Node {
   messagesOverMonths(timeRange: TimeRange): [MessagesOverMonth!]!
   avgDailyActiveUsers(timeRange: TimeRange): Float!
   avgMessagesPerConversation(timeRange: TimeRange): Float!
+  usageBySellers(timeRange: TimeRange, departments: [String!]): [UsageBySeller!]!
+  sellersByWorkRegion(timeRange: TimeRange, departments: [String!]): [SellerByWorkRegion!]!
+  conversationsByChatMode(timeRange: TimeRange, departments: [String!]): [ConversationByChatMode!]!
+  conversationsByLanguage(timeRange: TimeRange, departments: [String!]): [ConversationByLanguage!]!
+  responseRatingByUsers(timeRange: TimeRange, departments: [String!]): [ResponseRatingByUser!]!
+  departmentList(timeRange: TimeRange): [String!]!
 
   """
   Names of all available annotations for traces. (The list contains no duplicates.)

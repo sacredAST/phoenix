@@ -27,7 +27,7 @@ def main():
     )
 
     project_list = client.projects.list()
-    # conversations_all, messages_all, user_info_all, chunks_all = load()
+    conversations_all, messages_all, user_info_all, chunks_all = load()
 
     # user_count = user_info_all['user_id'].nunique()
     # user_info_all['last_login'] = pd.to_datetime(user_info_all['last_login'])
@@ -55,23 +55,23 @@ def main():
 
     project_name = project_list[0].get('name', '')
 
-    # client.usages.insert_user_info(project_name=project_name, user_info_dataframe= user_info_all[['user_id', 'name', 'email', 'last_login']])
+    client.usages.insert_user_info(project_name=project_name, user_info_dataframe= user_info_all[['user_id', 'name', 'email', 'last_login', 'seller_type', 'regionlevel2', 'department']])
     
-    # client.usages.insert_message_info(project_name=project_name, message_info_dataframe=messages_all[['user_id', 'message_id', 'conversation_id', 'timestamp']])
+    client.usages.insert_message_info(project_name=project_name, message_info_dataframe=messages_all[['user_id', 'message_id', 'conversation_id', 'timestamp', 'response_feedback_notnull']])
 
-    # client.usages.insert_conversation_info(project_name=project_name, conversation_info_dataframe = conversations_all[['user_id', 'conversation_id', 'last_interaction']])
+    client.usages.insert_conversation_info(project_name=project_name, conversation_info_dataframe = conversations_all[['user_id', 'conversation_id', 'last_interaction', 'chat_mod', 'language']])
 
     # user_infos = client.usages.get_user_info(project_name=project_name)
 
     # message_info = client.usages.get_message_info(project_name=project_name)
 
-    # conversation_info = client.usages.get_conversation_info(project_name=project_name)
+    conversation_info = client.usages.get_conversation_info(project_name=project_name)
 
     # print(user_infos)
 
     # print(message_info)
 
-    # print(conversation_info)
+    print(conversation_info)
 
 if __name__ == "__main__":
     main()
